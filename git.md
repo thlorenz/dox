@@ -9,3 +9,9 @@ Follow [these](http://help.github.com/mac-set-up-git/) instructions.
 
     git config --global user.name "Firstname Lastname"
     git config --global user.email "your_email@youremail.com"
+
+# Adding remote Origin
+
+`git remote add origin git@github.com:username/reponame.git`
+`git pull origin master`
+
