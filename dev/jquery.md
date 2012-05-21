@@ -1,4 +1,13 @@
-<a href="#Events"></a>
+# Table of Contents
+
+- <a href="#Events">Events</a>
+    - <a href="#on">on</a>
+    - <a href="#off">off</a>
+    - <a href="#trigger">trigger</a>
+- <a href="#widget-factory">Widget Factory</a>
+    - <a href="#infrastructure">infrastructure</a>
+    - <a href="#instance-properties">instance-properties</a>
+    - <a href="#extra-instance-methods-not-mentioned-in-infrastructure">extra-instance-methods-not-mentioned-in-infrastructure</a>
 
 # Events
 
