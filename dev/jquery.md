@@ -8,6 +8,7 @@
     - <a href="#infrastructure">infrastructure</a>
     - <a href="#instance-properties">instance-properties</a>
     - <a href="#extra-instance-methods-not-mentioned-in-infrastructure">extra-instance-methods-not-mentioned-in-infrastructure</a>
+    - <a href="#inner-workings">inner-workings</a>
 
 # Events
 
@@ -121,7 +122,7 @@
 
 ## Why
 
-- automatic pseudo selector creation `$(':namespace-widgetname')`
+- automatic **pseudo selector** creation `$(':namespace-widgetname')`
 - prototype linked to `jQuery.fn` via `jQuery.widget.bridge`
 - default options merged with user's overrides
 - plugin instance accessible via `$('#id').data('widgetname')`
@@ -141,7 +142,7 @@
 minimum: 
 
 - `options` used as defaults
-- `_create` set up widget 
+- `_create` set up widget (build and inject markup, bind events, etc.,)
 - `_setOption` respond to changes to options
     - jQuery UI 1.8 and below invoke `_setOption` on base widget via: `$.Widget.prototype._setOption.apply( this, arguments );`
     - jQuery UI 1.9 and above use `this._super( "_setOption", key, value );`
@@ -185,6 +186,8 @@ minimum:
 
 - invoked when widget is invoked with no or one option argument
 - usually called after `_create` or `create`
+- `_create` only called once per widget instance (unless it is destroued), `_init` each time widget is called without args
+- place default functionality here
 
 #### option
 
@@ -200,12 +203,13 @@ minimum:
 #### _trigger
 
 - used to execute callbacks
-- requires only name of callback to execute, but may provide an `event` object and `data` hash
+- `_trigger('eventName'[, eventObject] [, hash])`
+- `self._trigger('eventName')`
+    - widget factory prepends widget's name and fires event
+    - if function with 'eventName' exists inside options object, it is also triggered
 
- 
+### Inner Workings
 
-
-
-
-
-
+- widget instance is stored in element's data() cache e.g., `$('#id').data()`
+- on `_create` markup is generated and injected into DOM and the original element transformed
+    
