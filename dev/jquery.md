@@ -27,10 +27,10 @@
 			- [widgetEventPrefix](#widgeteventprefix)
 			- [widgetBaseClass](#widgetbaseclass)
 		- [Extra Instance Methods (not mentioned in *Infrastructure*)](#extra-instance-methods-not-mentioned-in-infrastructure)
-			- [_init](#init)
+			- [_init](#_init)
 			- [option](#option)
 			- [enable/disable](#enable/disable)
-			- [_trigger](#trigger)
+			- [_trigger](#_trigger)
 		- [Inner Workings](#inner-workings)
 
 # Events
