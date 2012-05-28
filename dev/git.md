@@ -1,3 +1,9 @@
+**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
+
+- [Installation](#installation)
+- [SSH keys](#ssh-keys)
+- [Adding remote Origin](#adding-remote-origin)
+
 # Installation
     sudo apt-get git
 

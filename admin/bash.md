@@ -1,3 +1,16 @@
+**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
+
+- [Bash History](#bash-history)
+	- [Further Reading](#further-reading)
+- [Vi editing mode](#vi-editing-mode)
+	- [Further Reading](#further-reading)
+- [Sed](#sed)
+	- [Further Reading](#further-reading)
+- [Awk](#awk)
+	- [Further Reading](#further-reading)
+- [Scripting](#scripting)
+	- [Detect current script folder](#detect-current-script-folder)
+
 # Bash History
 
 ## Further Reading

@@ -1,3 +1,12 @@
+**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
+
+- [Haskell Platform](#haskell-platform)
+	- [Installation](#installation)
+	- [Building from Source](#building-from-source)
+	- [Building GHC](#building-ghc)
+		- [Dependencies](#dependencies)
+		- [Configure and Make](#configure-and-make)
+
 # Haskell Platform
 
 ## Installation

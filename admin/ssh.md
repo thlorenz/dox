@@ -1,3 +1,12 @@
+**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
+
+- [Config SSH](#config-ssh)
+	- [Local Station](#local-station)
+	- [Remote Machine](#remote-machine)
+		- [SSH config](#ssh-config)
+		- [Reload ssh](#reload-ssh)
+		- [Local Station](#local-station)
+
 # Config SSH
 
 Follow steps given [here](http://articles.slicehost.com/2010/10/18/ubuntu-maverick-setup-part-1)
