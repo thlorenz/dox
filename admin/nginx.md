@@ -20,7 +20,7 @@
 	- [Control](#control)
 	- [Configuration](#configuration)
 		- [General ](#general)
-			- [Edits made (defaults of current nginx version match suggested settings mostly)](#edits-made-(defaults-of-current-nginx-version-match-suggested-settings-mostly))
+			- [Edits made (defaults of current nginx version match suggested settings mostly)](#edits-made-defaults-of-current-nginx-version-match-suggested-settings-mostly)
 		- [Yesod specific](#yesod-specific)
 
 # Nginx 
