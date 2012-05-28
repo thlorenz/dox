@@ -2,9 +2,9 @@
 
 - [Uncomplicated Firewall](#uncomplicated-firewall)
 - [iptables](#iptables)
-- [Show Rules](#show-rules)
-- [Config ](#config)
-- [Edit iptables later](#edit-iptables-later)
+	- [Show Rules](#show-rules)
+	- [Config ](#config)
+		- [Edit iptables later](#edit-iptables-later)
 
 # Uncomplicated Firewall
 

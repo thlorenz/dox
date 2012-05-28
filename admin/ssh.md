@@ -1,11 +1,11 @@
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
 - [Config SSH](#config-ssh)
-- [Local Station](#local-station)
-- [Remote Machine](#remote-machine)
-- [SSH config](#ssh-config)
-- [Reload ssh](#reload-ssh)
-- [Local Station](#local-station)
+	- [Local Station](#local-station)
+	- [Remote Machine](#remote-machine)
+		- [SSH config](#ssh-config)
+		- [Reload ssh](#reload-ssh)
+		- [Local Station](#local-station)
 
 # Config SSH
 
