@@ -1,6 +1,5 @@
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
-- [Table of Contents](#table-of-contents)
 - [Events](#events)
 	- [Event Object](#event-object)
 		- [Creation](#creation)
@@ -33,41 +32,6 @@
 			- [enable/disable](#enable/disable)
 			- [_trigger](#_trigger)
 		- [Inner Workings](#inner-workings)
-
-# Table of Contents
-
-- <a href="#events">Events</a>
-    - <a href="#event-object">Event Object</a>
-		- <a href="#creation">Creation</a>
-		- <a href="#properties">Properties</a>
-	- <a href="#propagation">Propagation</a>
-	- <a href="#performance">Performance</a>
-		- <a href="#advantages-of-using-selector-delegated-evenst">Advantages of using selector (delegated evenst)</a>
-	- <a href="#on-vs-bind-live-and-delegate">on vs bind, live and delegate</a>
-	- <a href="#on">.on</a>
-		- <a href="#signatures">Signatures</a>
-	- <a href="#off">.off</a>
-		- <a href="#signatures-1">Signatures</a>
-	- <a href="#trigger">.trigger</a>
-		- <a href="#signatures-2">Signatures</a>
-- <a href="#widget-factory">Widget Factory</a>
-	- <a href="#what">What</a>
-	- <a href="#why">Why</a>
-	- <a href="#building-prototype">Building Prototype</a>
-		- <a href="#infrastructure">Infrastructure</a>
-		- <a href="#private-vs-public-methods">Private vs. Public Methods</a>
-		- <a href="#instance-properties">Instance Properties</a>
-			- <a href="#element">element</a>
-			- <a href="#options">options</a>
-			- <a href="#namespace-name">namespace, name</a>
-			- <a href="#widgeteventprefix">widgetEventPrefix</a>
-			- <a href="#widgetbaseclass">widgetBaseClass</a>
-		- <a href="#extra-instance-methods-not-mentioned-in-infrastructure">Extra Instance Methods (not mentioned in Infrastructure)</a>
-			- <a href="#_init">_init</a>
-			- <a href="#option">option</a>
-			- <a href="#enabledisable">enable/disable</a>
-			- <a href="#_trigger">_trigger</a>
-		- <a href="#inner-workings">Inner Workings</a>
 
 # Events
 
