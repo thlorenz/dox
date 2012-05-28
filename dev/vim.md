@@ -1,19 +1,19 @@
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
-		- [Reserved Symbols](#reserved-symbols)
-		- [Spell Checking](#spell-checking)
-		- [Key Bindings](#key-bindings)
-			- [Keys](#keys)
-		- [Navigation](#navigation)
-		- [Searching](#searching)
-			- [VimGrep](#vimgrep)
-		- [Marks](#marks)
-		- [Autocompletion](#autocompletion)
-		- [Macros](#macros)
-		- [Sessions and Views](#sessions-and-views)
-		- [Registers](#registers)
-		- [Folding](#folding)
-		- [Vimdiff](#vimdiff)
+- [Reserved Symbols](#reserved-symbols)
+- [Spell Checking](#spell-checking)
+- [Key Bindings](#key-bindings)
+- [Keys](#keys)
+- [Navigation](#navigation)
+- [Searching](#searching)
+- [VimGrep](#vimgrep)
+- [Marks](#marks)
+- [Autocompletion](#autocompletion)
+- [Macros](#macros)
+- [Sessions and Views](#sessions-and-views)
+- [Registers](#registers)
+- [Folding](#folding)
+- [Vimdiff](#vimdiff)
 
 ### Reserved Symbols
 

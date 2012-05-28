@@ -1,13 +1,13 @@
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
 - [Typical Desktop Setup](#typical-desktop-setup)
-	- [Plex Media Server](#plex-media-server)
-	- [Samba](#samba)
-		- [Sample Config](#sample-config)
-		- [Set Samba User Password](#set-samba-user-password)
-		- [Open Firewall ports](#open-firewall-ports)
-	- [Grub](#grub)
-	- [Change boot config](#change-boot-config)
+- [Plex Media Server](#plex-media-server)
+- [Samba](#samba)
+- [Sample Config](#sample-config)
+- [Set Samba User Password](#set-samba-user-password)
+- [Open Firewall ports](#open-firewall-ports)
+- [Grub](#grub)
+- [Change boot config](#change-boot-config)
 
 # Typical Desktop Setup
 
