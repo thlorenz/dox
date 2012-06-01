@@ -202,3 +202,11 @@ Navigate to Previous/Next change
 
     [c  ]c
 
+Convert tabwidth in entire file
+
+(stackoverflow)[http://superuser.com/questions/285362/any-tool-to-convert-tabs-with-2-spaces-to-4-spaces]
+
+- `:set ts=2 sw=2 noet`
+- shift entire file back and forth `>G<G`
+- `:set ts=4 sw=4 et`
+- shift entire file back and forth again
