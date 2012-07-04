@@ -7,6 +7,8 @@
 	- [Add remote of forked repo](#add-remote-of-forked-repo)
 	- [Pull in upstream changes](#pull-in-upstream-changes)
 - [Fetch vs. Pull](#fetch-vs-pull)
+- [Configuration](#configuration)
+	- [Configure Remote](#configure-remote)
 
 # Installation
     sudo apt-get git
@@ -43,4 +45,8 @@ Follow [these](http://help.github.com/mac-set-up-git/) instructions.
 - when `fetch`ing, git gathers commits on target branch that don't exist in current branch, but doesn't merge them
 - use manual `merge` later on to integrate commits into master branch
 
+# Configuration
 
+## Configure Remote
+    
+    git config remote.origin.url git@github.com:username/projectname
