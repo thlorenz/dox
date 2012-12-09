@@ -30,4 +30,16 @@
 - `:Gedit :0` opens indexed version of current file
 - `:Gdiff` diffs current file' working copy with the one in the index
 - `:Gwrite` from index file == `:Gread` from working copy and vice versa
+- in diff view diffput and diffget followed by writing index file allows staging hunks of code (visual mode is
+  supported)
 
+# Merging
+
+- `:Gdiff` on file with conflicts opens 3 way split (target|working with conflicts|merge)
+- fugitive names working and merge files consistently as `//2/filename` and `//3/filename` respectively which allows
+  using these as bufspecs: ( `//2` | `name` | `//3` )
+- a) keep focus in middle buffer and use `diffget //2` or `diffget //3` resolve conflict with target or merge respectively
+- b) focus the buffer whose change to keep and `dp` (fugitive ensures that all puts go into working copy = middle
+  buffer and automatically runs diffupdate)
+- `:Gwrite` from working buffer finishes merge and removes splits
+- `:Grwite!` from merge takes all changes from it
