@@ -79,7 +79,7 @@
 ### Inside comitted files
 
 - `:Ggrep` wraps `git grep`, i.e. `git grep highlight | view -` and puts all matches into quickfix window
-- `:Ggrep 'find me' [branch|tag|sha] searches through files at that particular place
+- `:Ggrep 'find me' [branch|tag|sha]` searches through files at that particular place
 
 ### Inside commit messages
 
