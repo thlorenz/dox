@@ -47,6 +47,16 @@ Follow [these](http://help.github.com/mac-set-up-git/) instructions.
 
 # Configuration
 
+## Config files
+
+- `etc/gitconfig` file: Contains values for every user on the system and all their repositories. If you pass the
+  option--system to git config, it reads and writes from this file specifically.
+- `/.gitconfig` file: Specific to your user. You can make Git read and write to this file specifically by passing the
+  --global option.
+- `.git/config` of whatever repository you’re currently using
+- each level overrides previos values
+
 ## Configure Remote
     
     git config remote.origin.url git@github.com:username/projectname
+
