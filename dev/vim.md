@@ -62,6 +62,8 @@ Backwards/Forwards - Repeat Search
 Forward/Backward Word under Cursor, Part of word under Cursor
 
     #   *       g#  g*
+    
+[vim regex resource](http://vimregex.com/)
 
 #### VimGrep
 
