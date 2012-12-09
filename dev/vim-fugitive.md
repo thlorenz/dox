@@ -9,7 +9,7 @@
 - `:Git blame %`    =  `Gblame` Opens vsplit buffer showing commits and committer
 - `
 
-# Git index
+# Git Status
 
 - `:GStatus` brings up buffer with list of staged/unstaged/untracked files
 - `Ctrl-n, Ctrl-p` navigate between filenames
@@ -23,3 +23,11 @@
 
 - `Enter` in status window open file under cursor
 - `:Gdiff` shows diff of changes
+
+# Git index
+
+- `:Gedit :path/to/file` opens indexed (last staged/committed) version of the file
+- `:Gedit :0` opens indexed version of current file
+- `:Gdiff` diffs current file' working copy with the one in the index
+- `:Gwrite` from index file == `:Gread` from working copy and vice versa
+
