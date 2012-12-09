@@ -49,14 +49,45 @@ Follow [these](http://help.github.com/mac-set-up-git/) instructions.
 
 ## Config files
 
-- `etc/gitconfig` file: Contains values for every user on the system and all their repositories. If you pass the
+- `etc/gitconfig` Contains values for every user on the system and all their repositories. If you pass the
   option--system to git config, it reads and writes from this file specifically.
-- `/.gitconfig` file: Specific to your user. You can make Git read and write to this file specifically by passing the
+- `/.gitconfig` Specific to your user. You can make Git read and write to this file specifically by passing the
   --global option.
 - `.git/config` of whatever repository you’re currently using
 - each level overrides previos values
 
-## Configure Remote
+## Configuring Remote
     
     git config remote.origin.url git@github.com:username/projectname
+
+## Configuring User
+
+    git config --global user.name "John Doe"
+    git config --global user.email johndoe@example.com
+
+## Configuring Tools
+
+    git config --global core.editor vim
+    git config --global merge.tool vimdiff
+    git config --global <color.ui|color.diff> <true|false>
+
+## Checking Settings
+
+    git config --list
+
+# Ignoring Files
+
+- standard glob patterns `/` specifies directory, `!` negates pattern
+
+    # a comment  this is ignored
+    *.a       # no .a files
+    !lib.a    # but do track lib.a, even though you’re ignoring .a files above
+    /TODO     # only ignore the root TODO file, not subdir/TODO
+    build/    # ignore all files in the build/ directory
+    doc/*.txt # ignore doc/notes.txt, but not doc/server/arch.txt
+
+# Viewing Changes
+
+- `git diff` unstaged changes with staged changes
+- `git diff <--cached|-c>` staged changes with last commit
 
