@@ -91,3 +91,11 @@ Follow [these](http://help.github.com/mac-set-up-git/) instructions.
 - `git diff` unstaged changes with staged changes
 - `git diff <--cached|-c>` staged changes with last commit
 
+# Logs
+
+- `git log -u <file>` shows all commits that changed the file including diffs
+- `git log -n` logs only last `n` commits
+
+# Files
+
+- `git ls-files` lists all tracked files in git repo
