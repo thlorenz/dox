@@ -1,3 +1,18 @@
+**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
+
+- [[SmartOS](http://smartos.org/)](#smartoshttp//smartosorg/)
+	- [illumos](#illumos)
+	- [Virtualization](#virtualization)
+		- [Two types of virtualization supported](#two-types-of-virtualization-supported)
+		- [Virtualization is built on top of illumos technologies inherited from OpenSolaris](#virtualization-is-built-on-top-of-illumos-technologies-inherited-from-opensolaris)
+	- [Installation](#installation)
+		- [[SmartOS on VirtualBox](http://wiki.smartos.org/display/DOC/SmartOS+on+VirtualBox)](#smartos-on-virtualboxhttp//wikismartosorg/display/doc/smartos+on+virtualbox)
+	- [Managing VMs](#managing-vms)
+	- [Resources](#resources)
+	- [Guides](#guides)
+		- [CheatSheets](#cheatsheets)
+		- [Videos](#videos)
+
 # [SmartOS](http://smartos.org/)
 
 - specialized [Type 1 Hypervisor](http://en.wikipedia.org/wiki/Hypervisor) platform based on
