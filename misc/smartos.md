@@ -77,3 +77,4 @@
 
 - [smartos operations](http://www.youtube.com/watch?v=96PGoXHli3Q&feature=player_embedded)
 - [smartos for sysadmins](http://www.youtube.com/watch?v=dxZExLeJz2I&feature=player_embedded)
+- [install process demo](https://www.youtube.com/watch?v=TIdbggrEZMY)
