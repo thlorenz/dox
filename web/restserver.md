@@ -33,7 +33,7 @@
 			- [Response Message](#response-message)
 			- [Example Session](#example-session)
 	- [URI Scheme](#uri-scheme)
-	- [Resources](#resources)
+	- [Resources](#resources-1)
 
 # Representational State Transfer
 
