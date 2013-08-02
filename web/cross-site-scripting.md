@@ -86,6 +86,9 @@ Three techniques to relax SOP exist (explained below)
 ### Resources
 
 - [wikipedia](http://en.wikipedia.org/wiki/Cross-Origin_Resource_Sharing)
+- [enable-CORS-resources](http://enable-cors.org/resources.html)
+- [using CORS html5rocks](http://www.html5rocks.com/en/tutorials/cors/)
+- [using CORS shorter](http://www.nczonline.net/blog/2010/05/25/cross-domain-ajax-with-cross-origin-resource-sharing/)
 
 
 
