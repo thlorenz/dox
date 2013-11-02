@@ -1,6 +1,7 @@
 ## Autoconf
 
-- Write your program, keeping portability in mind. Create `Makefile.in`
+- Write your program, keeping portability in mind
+- create `Makefile.in`
 - Run `autoscan`.
 - Rename `configure.scan` to `configure.ac`
 - Run `autoheader`.
