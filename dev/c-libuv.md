@@ -13,6 +13,10 @@
 		- [`uv_udp_send_t`](#uv_udp_send_t)
 		- [`uv_fs_t`](#uv_fs_t)
 		- [`uv_work_t`](#uv_work_t)
+	- [enumerations](#enumerations)
+		- [`uv_errno_t`](#uv_errno_t)
+		- [`uv_handle_type`](#uv_handle_type)
+		- [`uv_req_type`](#uv_req_type)
 	- [file info](#file-info)
 		- [`uv_stat_t`](#uv_stat_t)
 			- [`uv_timespec_t`](#uv_timespec_t)
@@ -42,8 +46,12 @@
 		- [`uv_signal_cb`](#uv_signal_cb)
 - [methods](#methods)
 	- [loop](#loop)
-		- [create/delete/get-default](#createdeleteget-default)
-		- [run/alive/stop](#runalivestop)
+		- [`uv_loop_new`](#uv_loop_new)
+		- [`uv_loop_delete`](#uv_loop_delete)
+		- [`uv_default_loop`](#uv_default_loop)
+		- [`uv_run`](#uv_run)
+		- [`uv_loop_alive`](#uv_loop_alive)
+		- [`uv_stop`](#uv_stop)
 		- [Examples](#examples)
 		- [reference count](#reference-count)
 		- [used less often](#used-less-often)
@@ -277,6 +285,139 @@ struct uv_work_s {
 };
 ```
 
+## enumerations
+
+### `uv_errno_t`
+
+```c
+typedef enum {
+
+  // UV_ERRNO_MAP(XX)
+  XX(E2BIG, "argument list too long")
+  XX(EACCES, "permission denied")
+  XX(EADDRINUSE, "address already in use")
+  XX(EADDRNOTAVAIL, "address not available")
+  XX(EAFNOSUPPORT, "address family not supported")
+  XX(EAGAIN, "resource temporarily unavailable")
+  XX(EAI_ADDRFAMILY, "address family not supported")
+  XX(EAI_AGAIN, "temporary failure")
+  XX(EAI_BADFLAGS, "bad ai_flags value")
+  XX(EAI_BADHINTS, "invalid value for hints")
+  XX(EAI_CANCELED, "request canceled")
+  XX(EAI_FAIL, "permanent failure")
+  XX(EAI_FAMILY, "ai_family not supported")
+  XX(EAI_MEMORY, "out of memory")
+  XX(EAI_NODATA, "no address")
+  XX(EAI_NONAME, "unknown node or service")
+  XX(EAI_OVERFLOW, "argument buffer overflow")
+  XX(EAI_PROTOCOL, "resolved protocol is unknown")
+  XX(EAI_SERVICE, "service not available for socket type")
+  XX(EAI_SOCKTYPE, "socket type not supported")
+  XX(EAI_SYSTEM, "system error")
+  XX(EALREADY, "connection already in progress")
+  XX(EBADF, "bad file descriptor")
+  XX(EBUSY, "resource busy or locked")
+  XX(ECANCELED, "operation canceled")
+  XX(ECHARSET, "invalid Unicode character")
+  XX(ECONNABORTED, "software caused connection abort")
+  XX(ECONNREFUSED, "connection refused")
+  XX(ECONNRESET, "connection reset by peer")
+  XX(EDESTADDRREQ, "destination address required")
+  XX(EEXIST, "file already exists")
+  XX(EFAULT, "bad address in system call argument")
+  XX(EHOSTUNREACH, "host is unreachable")
+  XX(EINTR, "interrupted system call")
+  XX(EINVAL, "invalid argument")
+  XX(EIO, "i/o error")
+  XX(EISCONN, "socket is already connected")
+  XX(EISDIR, "illegal operation on a directory")
+  XX(ELOOP, "too many symbolic links encountered")
+  XX(EMFILE, "too many open files")
+  XX(EMSGSIZE, "message too long")
+  XX(ENAMETOOLONG, "name too long")
+  XX(ENETDOWN, "network is down")
+  XX(ENETUNREACH, "network is unreachable")
+  XX(ENFILE, "file table overflow")
+  XX(ENOBUFS, "no buffer space available")
+  XX(ENODEV, "no such device")
+  XX(ENOENT, "no such file or directory")
+  XX(ENOMEM, "not enough memory")
+  XX(ENONET, "machine is not on the network")
+  XX(ENOSPC, "no space left on device")
+  XX(ENOSYS, "function not implemented")
+  XX(ENOTCONN, "socket is not connected")
+  XX(ENOTDIR, "not a directory")
+  XX(ENOTEMPTY, "directory not empty")
+  XX(ENOTSOCK, "socket operation on non-socket")
+  XX(ENOTSUP, "operation not supported on socket")
+  XX(EPERM, "operation not permitted")
+  XX(EPIPE, "broken pipe")
+  XX(EPROTO, "protocol error")
+  XX(EPROTONOSUPPORT, "protocol not supported")
+  XX(EPROTOTYPE, "protocol wrong type for socket")
+  XX(EROFS, "read-only file system")
+  XX(ESHUTDOWN, "cannot send after transport endpoint shutdown")
+  XX(ESPIPE, "invalid seek")
+  XX(ESRCH, "no such process")
+  XX(ETIMEDOUT, "connection timed out")
+  XX(EXDEV, "cross-device link not permitted")
+  XX(UNKNOWN, "unknown error")
+  XX(EOF, "end of file")
+
+  UV_ERRNO_MAX = UV__EOF - 1
+} uv_errno_t;
+```
+
+### `uv_handle_type`
+
+```c
+typedef enum {
+  UV_UNKNOWN_HANDLE = 0,
+
+  // UV_HANDLE_TYPE_MAP(XX) (include/uv.h)
+  XX(ASYNC, async)
+  XX(CHECK, check)
+  XX(FS_EVENT, fs_event)
+  XX(FS_POLL, fs_poll)
+  XX(HANDLE, handle)
+  XX(IDLE, idle)
+  XX(NAMED_PIPE, pipe)
+  XX(POLL, poll)
+  XX(PREPARE, prepare)
+  XX(PROCESS, process)
+  XX(STREAM, stream)
+  XX(TCP, tcp)
+  XX(TIMER, timer)
+  XX(TTY, tty)
+  XX(UDP, udp)
+  XX(SIGNAL, signal)
+  UV_FILE,
+
+  UV_HANDLE_TYPE_MAX
+} uv_handle_type;
+```
+
+### `uv_req_type`
+
+```c
+typedef enum {
+  UV_UNKNOWN_REQ = 0,
+
+  // UV_REQ_TYPE_MAP(XX) (include/uv.h)
+  XX(REQ, req)
+  XX(CONNECT, connect)
+  XX(WRITE, write)
+  XX(SHUTDOWN, shutdown)
+  XX(UDP_SEND, udp_send)
+  XX(FS, fs)
+  XX(WORK, work)
+  XX(GETADDRINFO, getaddrinfo)
+
+  UV_REQ_TYPE_PRIVATE
+  UV_REQ_TYPE_MAX
+} uv_req_type;
+```
+
 ## file info
 
 ### `uv_stat_t`
@@ -504,15 +645,26 @@ typedef void (*uv_signal_cb)(uv_signal_t* handle, int signum);
 
 ## loop
 
-### create/delete/get-default
+
+### `uv_loop_new`
 
 ```c
 uv_loop_t* uv_loop_new(void)
+```
+
+### `uv_loop_delete`
+
+```c
 void uv_loop_delete(uv_loop_t*);
+```
+
+### `uv_default_loop`
+
+```c
 uv_loop_t* uv_default_loop(void);
 ```
 
-### run/alive/stop 
+### `uv_run`
 
 ```c
 /*
@@ -528,13 +680,21 @@ uv_loop_t* uv_default_loop(void);
  *    pending events.
  */
 int uv_run(uv_loop_t*, uv_run_mode mode);
+```
 
+### `uv_loop_alive`
+
+```c
 /*
  * This function checks whether the reference count, the number of active
  * handles or requests left in the event loop, is non-zero.
  */
 int uv_loop_alive(const uv_loop_t* loop);
+```
 
+### `uv_stop`
+
+```c
 /*
  * This function will stop the event loop by forcing uv_run to end
  * as soon as possible, but not sooner than the next loop iteration.
