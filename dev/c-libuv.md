@@ -1,19 +1,32 @@
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
-- [data structures](#data-structures)
-	- [loop](#loop)
+- [types](#types)
+	- [loop handle types](#loop-handle-types)
 		- [`uv_loop_t`](#uv_loop_t)
 		- [`uv_handle_t`](#uv_handle_t)
+	- [request types](#request-types)
+		- [`uv_req_t` base for all request types](#uv_req_t-base-for-all-request-types)
+		- [`uv_getaddrinfo_t`](#uv_getaddrinfo_t)
+		- [`uv_shutdown_t`](#uv_shutdown_t)
+		- [`uv_write_t`](#uv_write_t)
+		- [`uv_connect_t`](#uv_connect_t)
+		- [`uv_udp_send_t`](#uv_udp_send_t)
+		- [`uv_fs_t`](#uv_fs_t)
+		- [`uv_work_t`](#uv_work_t)
 - [methods](#methods)
-	- [loop](#loop-1)
+	- [loop](#loop)
 		- [create/delete/get-default](#createdeleteget-default)
 		- [run/alive/stop](#runalivestop)
 		- [Examples](#examples)
 		- [reference count](#reference-count)
+		- [used less often](#used-less-often)
+			- [time](#time)
+			- [backend - embedding loop in another loop](#backend---embedding-loop-in-another-loop)
+		- [callbacks](#callbacks)
 
-# data structures
+# types 
 
-## loop
+## loop handle types
 
 ### `uv_loop_t`
 
@@ -86,6 +99,152 @@ struct uv_handle_s {
   uv_handle_t* next_closing;
 };
 ```
+
+## request types
+
+### `uv_req_t` base for all request types
+
+```c
+/* Abstract base class of all requests. */
+struct uv_req_s {
+
+  // UV_REQ_FIELDS
+  /* public */
+  void* data;
+
+  /* read-only */
+  uv_req_type type;
+
+  /* private */
+  void* active_queue[2];
+
+  // UV_REQ_PRIVATE_FIELDS (include/uv-unix.h)
+  /* empty */
+};
+```
+
+**Note:** all request types below subclass `uv_req_s` via the inclusion of `UV_REQ_FIELDS`.
+
+### `uv_getaddrinfo_t`
+
+```c
+struct uv_getaddrinfo_s {
+  /* read-only */
+  uv_loop_t* loop;
+
+  // UV_GETADDRINFO_PRIVATE_FIELDS (include/uv-unix.h)
+  struct uv__work work_req;
+  uv_getaddrinfo_cb cb;
+  struct addrinfo* hints;
+  char* hostname;
+  char* service;
+  struct addrinfo* res;
+  int retcode;
+};
+```
+
+### `uv_shutdown_t`
+
+```c
+struct uv_shutdown_s {
+  uv_stream_t* handle;
+  uv_shutdown_cb cb;
+  
+  // UV_SHUTDOWN_PRIVATE_FIELDS (include/uv-unix.h)
+  /* empty */
+};
+```
+
+### `uv_write_t`
+
+```c
+struct uv_write_s {
+  uv_write_cb cb;
+  uv_stream_t* send_handle;
+  uv_stream_t* handle;
+
+  // UV_WRITE_PRIVATE_FIELDS (include/uv-unix.h)
+  void* queue[2];
+  unsigned int write_index;
+  uv_buf_t* bufs;
+  unsigned int nbufs;
+  int error;
+  uv_buf_t bufsml[4];
+};
+```
+
+### `uv_connect_t`
+
+```c
+struct uv_connect_s {
+  uv_connect_cb cb;
+  uv_stream_t* handle;
+
+  // UV_CONNECT_PRIVATE_FIELDS (include/uv-unix.h)
+  void* queue[2];
+};
+```
+
+### `uv_udp_send_t`
+
+```c
+struct uv_udp_send_s {
+  uv_udp_t* handle;
+  uv_udp_send_cb cb;
+
+  // UV_UDP_SEND_PRIVATE_FIELDS (include/uv-unix.h)
+  void* queue[2];
+  struct sockaddr_in6 addr;
+  unsigned int nbufs;
+  uv_buf_t* bufs;
+  ssize_t status;
+  uv_udp_send_cb send_cb;
+  uv_buf_t bufsml[4];
+};
+```
+
+### `uv_fs_t`
+
+```c
+struct uv_fs_s {
+  UV_REQ_FIELDS
+  uv_fs_type fs_type;
+  uv_loop_t* loop;
+  uv_fs_cb cb;
+  ssize_t result;
+  void* ptr;
+  const char* path;
+  uv_stat_t statbuf;  /* Stores the result of uv_fs_stat and uv_fs_fstat. */
+
+  // UV_FS_PRIVATE_FIELDS (include/uv-unix.h)
+  const char *new_path;
+  uv_file file;
+  int flags;
+  mode_t mode;
+  void* buf;
+  size_t len;
+  off_t off;
+  uv_uid_t uid;
+  uv_gid_t gid;
+  double atime;
+  double mtime;
+  struct uv__work work_req;
+};
+```
+
+### `uv_work_t`
+
+```c
+struct uv_work_s {
+  uv_loop_t* loop;
+  uv_work_cb work_cb;
+  uv_after_work_cb after_work_cb;
+
+  // UV_WORK_PRIVATE_FIELDS (include/uv-unix.h)
+  struct uv__work work_req;
+};
+```
+
 
 # methods
 
@@ -161,4 +320,110 @@ uv_run(loop, UV_RUN_DEFAULT);
 void uv_ref(uv_handle_t*);
 void uv_unref(uv_handle_t*);
 int uv_has_ref(const uv_handle_t*);
+```
+
+### used less often
+
+#### time
+
+```c
+/*
+ * Update the event loop's concept of "now". Libuv caches the current time
+ * at the start of the event loop tick in order to reduce the number of
+ * time-related system calls.
+ *
+ * You won't normally need to call this function unless you have callbacks
+ * that block the event loop for longer periods of time, where "longer" is
+ * somewhat subjective but probably on the order of a millisecond or more.
+ */
+void uv_update_time(uv_loop_t*);
+
+/*
+ * Return the current timestamp in milliseconds. The timestamp is cached at
+ * the start of the event loop tick, see |uv_update_time()| for details and
+ * rationale.
+ *
+ * The timestamp increases monotonically from some arbitrary point in time.
+ * Don't make assumptions about the starting point, you will only get
+ * disappointed.
+ *
+ * Use uv_hrtime() if you need sub-millisecond granularity.
+ */
+uint64_t uv_now(uv_loop_t*);
+```
+
+#### backend - embedding loop in another loop
+
+```c
+/*
+ * Get backend file descriptor. Only kqueue, epoll and event ports are
+ * supported.
+ *
+ * This can be used in conjunction with `uv_run(loop, UV_RUN_NOWAIT)` to
+ * poll in one thread and run the event loop's event callbacks in another.
+ *
+ * Useful for embedding libuv's event loop in another event loop.
+ * See test/test-embed.c for an example.
+ *
+ * Note that embedding a kqueue fd in another kqueue pollset doesn't work on
+ * all platforms. It's not an error to add the fd but it never generates
+ * events.
+ */
+int uv_backend_fd(const uv_loop_t*);
+
+/*
+ * Get the poll timeout. The return value is in milliseconds, or -1 for no
+ * timeout.
+ */
+int uv_backend_timeout(const uv_loop_t*);
+```
+
+### callbacks
+
+```c
+/*
+ * `nread` is > 0 if there is data available, 0 if libuv is done reading for
+ * now, or < 0 on error.
+ *
+ * The callee is responsible for closing the stream when an error happens.
+ * Trying to read from the stream again is undefined.
+ *
+ * The callee is responsible for freeing the buffer, libuv does not reuse it.
+ * The buffer may be a null buffer (where buf->base=NULL and buf->len=0) on
+ * EOF or error.
+ */
+typedef void (*uv_read_cb)(uv_stream_t* stream,
+                           ssize_t nread,
+                           const uv_buf_t* buf);
+
+/*
+ * Just like the uv_read_cb except that if the pending parameter is true
+ * then you can use uv_accept() to pull the new handle into the process.
+ * If no handle is pending then pending will be UV_UNKNOWN_HANDLE.
+ */
+typedef void (*uv_read2_cb      )(uv_pipe_t* pipe,
+                                  ssize_t nread,
+                                  const uv_buf_t* buf,
+                                  uv_handle_type pending);
+
+typedef void (*uv_write_cb      )( uv_write_t* req     ,  int status);
+typedef void (*uv_connect_cb    )( uv_connect_t* req   ,  int status);
+typedef void (*uv_shutdown_cb   )( uv_shutdown_t* req  ,  int status);
+typedef void (*uv_connection_cb )( uv_stream_t* server ,  int status);
+typedef void (*uv_close_cb      )( uv_handle_t* handle);
+typedef void (*uv_poll_cb       )( uv_poll_t* handle   ,  int status, int events);
+typedef void (*uv_timer_cb      )( uv_timer_t* handle  ,  int status);
+
+typedef void (*uv_async_cb      )( uv_async_t* handle  ,  int status);
+typedef void (*uv_prepare_cb    )( uv_prepare_t* handle,  int status);
+typedef void (*uv_check_cb      )( uv_check_t* handle  ,  int status);
+typedef void (*uv_idle_cb       )( uv_idle_t* handle   ,  int status);
+typedef void (*uv_exit_cb       )( uv_process_t*, int64_t exit_status, int term_signal);
+typedef void (*uv_walk_cb       )( uv_handle_t* handle ,  void* arg);
+typedef void (*uv_fs_cb         )( uv_fs_t* req);
+typedef void (*uv_work_cb       )( uv_work_t* req);
+typedef void (*uv_after_work_cb )( uv_work_t* req, int status);
+typedef void (*uv_getaddrinfo_cb)(uv_getaddrinfo_t* req,
+                                  int status,
+                                  struct addrinfo* res);
 ```
