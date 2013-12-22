@@ -13,6 +13,8 @@
 		- [`uv_udp_send_t`](#uv_udp_send_t)
 		- [`uv_fs_t`](#uv_fs_t)
 		- [`uv_work_t`](#uv_work_t)
+	- [streams](#streams)
+		- [`uv_stream_t`](#uv_stream_t)
 	- [file info](#file-info)
 		- [`uv_stat_t`](#uv_stat_t)
 			- [`uv_timespec_t`](#uv_timespec_t)
@@ -63,10 +65,22 @@
 			- [`uv_backend`](#uv_backend)
 	- [handles](#handles)
 		- [`uv_handle_size`](#uv_handle_size)
-		- [`uv_req_size`](#uv_req_size)
 		- [`uv_is_active`](#uv_is_active)
 		- [`uv_walk`](#uv_walk)
 		- [`uv_close`](#uv_close)
+	- [requests](#requests-1)
+		- [`uv_req_size`](#uv_req_size)
+	- [buffers](#buffers)
+		- [`uv_buf_t `](#uv_buf_t-)
+	- [streams](#streams-1)
+		- [`uv_listen`](#uv_listen)
+		- [`uv_accept`](#uv_accept)
+		- [`uv_read_start`](#uv_read_start)
+		- [`uv_read_stop`](#uv_read_stop)
+		- [`uv_read2_start`](#uv_read2_start)
+		- [`uv_write`](#uv_write)
+		- [`uv_write2`](#uv_write2)
+		- [`uv_try_write`](#uv_try_write)
 	- [file system](#file-system)
 	- [errors](#errors)
 		- [`uv_strerror`](#uv_strerror)
@@ -290,6 +304,37 @@ struct uv_work_s {
 
   // UV_WORK_PRIVATE_FIELDS (include/uv-unix.h)
   struct uv__work work_req;
+};
+```
+
+## streams
+
+### `uv_stream_t`
+
+```c
+struct uv_stream_s {
+  // UV_HANDLE_FIELDS (see uv_handle_t)
+
+  // UV_STREAM_FIELDS (include/uv.h)
+  /* number of bytes queued for writing */
+  size_t write_queue_size;
+  uv_alloc_cb alloc_cb;
+  uv_read_cb read_cb;
+  uv_read2_cb read2_cb;
+  /* private */
+
+  // UV_STREAM_PRIVATE_FIELDS (include/uv-unix.h)
+  uv_connect_t *connect_req;
+  uv_shutdown_t *shutdown_req;
+  uv__io_t io_watcher;
+  void* write_queue[2];
+  void* write_completed_queue[2];
+  uv_connection_cb connection_cb;
+  int delayed_error;
+  int accepted_fd;
+
+  // UV_STREAM_PRIVATE_PLATFORM_FIELDS (include/uv-unix.h)
+  /* empty */
 };
 ```
 
@@ -831,15 +876,6 @@ int uv_backend_timeout(const uv_loop_t*);
 size_t uv_handle_size(uv_handle_type type);
 ```
 
-### `uv_req_size`
-
-```c
-/*
- * Returns size of request types, useful for dynamic lookup with FFI
- */
-size_t uv_req_size(uv_req_type type);
-```
-
 ### `uv_is_active`
 
 ```c
@@ -875,7 +911,6 @@ int uv_is_active(const uv_handle_t* handle);
 void uv_walk(uv_loop_t* loop, uv_walk_cb walk_cb, void* arg);
 ```
 
-
 ### `uv_close`
 
 ```c
@@ -893,10 +928,159 @@ void uv_walk(uv_loop_t* loop, uv_walk_cb walk_cb, void* arg);
 void uv_close(uv_handle_t* handle, uv_close_cb close_cb);
 ```
 
+## requests
+
+### `uv_req_size`
+
+```c
+/*
+ * Returns size of request types, useful for dynamic lookup with FFI
+ */
+size_t uv_req_size(uv_req_type type);
+```
+
+## buffers
+
+
+### `uv_buf_t `
+
+```c
+/*
+ * Constructor for uv_buf_t.
+ * Due to platform differences the user cannot rely on the ordering of the
+ * base and len members of the uv_buf_t struct. The user is responsible for
+ * freeing base after the uv_buf_t is done. Return struct passed by value.
+ */
+UV_EXTERN uv_buf_t uv_buf_init(char* base, unsigned int len);
+```
+
+## streams
+
+### `uv_listen`
+
+```c
+int uv_listen(uv_stream_t* stream, int backlog, uv_connection_cb cb);
+```
+
+### `uv_accept`
+
+```c
+
+/*
+ * This call is used in conjunction with uv_listen() to accept incoming
+ * connections. Call uv_accept after receiving a uv_connection_cb to accept
+ * the connection. Before calling uv_accept use uv_*_init() must be
+ * called on the client. Non-zero return value indicates an error.
+ *
+ * When the uv_connection_cb is called it is guaranteed that uv_accept will
+ * complete successfully the first time. If you attempt to use it more than
+ * once, it may fail. It is suggested to only call uv_accept once per
+ * uv_connection_cb call.
+ */
+
+int uv_accept(uv_stream_t* server, uv_stream_t* client);
+```
+
+### `uv_read_start`
+
+```c
+/*
+ * Read data from an incoming stream. The callback will be made several
+ * times until there is no more data to read or uv_read_stop is called.
+ * When we've reached EOF nread will be set to UV_EOF.
+ *
+ * When nread < 0, the buf parameter might not point to a valid buffer;
+ * in that case buf.len and buf.base are both set to 0.
+ *
+ * Note that nread might also be 0, which does *not* indicate an error or
+ * eof; it happens when libuv requested a buffer through the alloc callback
+ * but then decided that it didn't need that buffer.
+ */
+int uv_read_start(uv_stream_t*, uv_alloc_cb alloc_cb, uv_read_cb read_cb);
+```
+
+### `uv_read_stop`
+
+```c
+int uv_read_stop(uv_stream_t*);
+```
+
+### `uv_read2_start`
+
+```c
+/*
+ * Extended read methods for receiving handles over a pipe. The pipe must be
+ * initialized with ipc == 1.
+ */
+int uv_read2_start(uv_stream_t*, uv_alloc_cb alloc_cb, uv_read2_cb read_cb);
+```
+
+### `uv_write`
+
+```c
+/*
+ * Write data to stream. Buffers are written in order. Example:
+ *
+ *   uv_buf_t a[] = {
+ *     { .base = "1", .len = 1 },
+ *     { .base = "2", .len = 1 }
+ *   };
+ *
+ *   uv_buf_t b[] = {
+ *     { .base = "3", .len = 1 },
+ *     { .base = "4", .len = 1 }
+ *   };
+ *
+ *   uv_write_t req1;
+ *   uv_write_t req2;
+ *
+ *   // writes "1234"
+ *   uv_write(&req1, stream, a, 2);
+ *   uv_write(&req2, stream, b, 2);
+ *
+ */
+int uv_write(uv_write_t* req,
+             uv_stream_t* handle,
+             const uv_buf_t bufs[],
+             unsigned int nbufs,
+             uv_write_cb cb);
+```
+
+### `uv_write2`
+
+```c
+/*
+ * Extended write function for sending handles over a pipe. The pipe must be
+ * initialized with ipc == 1.
+ * send_handle must be a TCP socket or pipe, which is a server or a connection
+ * (listening or connected state).  Bound sockets or pipes will be assumed to
+ * be servers.
+ */
+int uv_write2(uv_write_t* req,
+              uv_stream_t* handle,
+              const uv_buf_t bufs[],
+              unsigned int nbufs,
+              uv_stream_t* send_handle,
+              uv_write_cb cb);
+```
+
+### `uv_try_write`
+
+```c
+/*
+ * Same as `uv_write()`, but won't queue write request if it can't be completed
+ * immediately.
+ * Will return either:
+ * - positive number of bytes written
+ * - zero - if queued write is needed
+ * - negative error code
+ */
+int uv_try_write(uv_stream_t* handle,
+                 const uv_buf_t bufs[],
+                 unsigned int nbufs);
+```
+
 ## file system
-
-
-
 
 ## errors
 
