@@ -15,6 +15,7 @@
 		- [`uv_work_t`](#uv_work_t)
 	- [streams](#streams)
 		- [`uv_stream_t`](#uv_stream_t)
+		- [`uv_tcp_t`](#uv_tcp_t)
 	- [file info](#file-info)
 		- [`uv_stat_t`](#uv_stat_t)
 			- [`uv_timespec_t`](#uv_timespec_t)
@@ -81,6 +82,20 @@
 		- [`uv_write`](#uv_write)
 		- [`uv_write2`](#uv_write2)
 		- [`uv_try_write`](#uv_try_write)
+		- [`uv_is_readable`](#uv_is_readable)
+		- [`uv_is_writable`](#uv_is_writable)
+		- [`uv_stream_set_blocking`](#uv_stream_set_blocking)
+		- [`uv_is_closing`](#uv_is_closing)
+	- [tcp](#tcp)
+		- [`uv_tcp_init`](#uv_tcp_init)
+		- [`uv_tcp_open`](#uv_tcp_open)
+		- [`uv_tcp_nodelay`](#uv_tcp_nodelay)
+		- [`uv_tcp_keepalive`](#uv_tcp_keepalive)
+		- [`uv_tcp_simultaneous_accepts`](#uv_tcp_simultaneous_accepts)
+		- [`uv_tcp_bind`](#uv_tcp_bind)
+		- [`uv_tcp_getsockname`](#uv_tcp_getsockname)
+		- [`uv_tcp_getpeername`](#uv_tcp_getpeername)
+		- [`uv_tcp_connect`](#uv_tcp_connect)
 	- [file system](#file-system)
 	- [errors](#errors)
 		- [`uv_strerror`](#uv_strerror)
@@ -334,6 +349,20 @@ struct uv_stream_s {
   int accepted_fd;
 
   // UV_STREAM_PRIVATE_PLATFORM_FIELDS (include/uv-unix.h)
+  /* empty */
+};
+```
+
+### `uv_tcp_t`
+
+Represents a TCP stream or TCP server.
+
+```c
+struct uv_tcp_s {
+  UV_HANDLE_FIELDS (see uv_handle_t)
+  UV_STREAM_FIELDS (see uv_stream_t)
+
+  // UV_TCP_PRIVATE_FIELDS (include/uv-unix.h)
   /* empty */
 };
 ```
@@ -1078,6 +1107,149 @@ int uv_write2(uv_write_t* req,
 int uv_try_write(uv_stream_t* handle,
                  const uv_buf_t bufs[],
                  unsigned int nbufs);
+```
+
+### `uv_is_readable`
+
+```c
+int uv_is_readable(const uv_stream_t* handle);
+```
+
+### `uv_is_writable`
+
+```c
+int uv_is_writable(const uv_stream_t* handle);
+```
+
+### `uv_stream_set_blocking`
+
+```c
+/*
+ * Enable or disable blocking mode for a stream.
+ *
+ * When blocking mode is enabled all writes complete synchronously. The
+ * interface remains unchanged otherwise, e.g. completion or failure of the
+ * operation will still be reported through a callback which is made
+ * asychronously.
+ *
+ * Relying too much on this API is not recommended. It is likely to change
+ * significantly in the future.
+ *
+ * On windows this currently works only for uv_pipe_t instances. On unix it
+ * works for tcp, pipe and tty instances. Be aware that changing the blocking
+ * mode on unix sets or clears the O_NONBLOCK bit. If you are sharing a handle
+ * with another process, the other process is affected by the change too,
+ * which can lead to unexpected results.
+ *
+ * Also libuv currently makes no ordering guarantee when the blocking mode
+ * is changed after write requests have already been submitted. Therefore it is
+ * recommended to set the blocking mode immediately after opening or creating
+ * the stream.
+ */
+int uv_stream_set_blocking(uv_stream_t* handle, int blocking);
+```
+
+### `uv_is_closing`
+
+```c
+/*
+ * Used to determine whether a stream is closing or closed.
+ *
+ * N.B. is only valid between the initialization of the handle
+ *      and the arrival of the close callback, and cannot be used
+ *      to validate the handle.
+ */
+int uv_is_closing(const uv_handle_t* handle);
+```
+
+## tcp
+
+### `uv_tcp_init`
+
+```c
+int uv_tcp_init(uv_loop_t*, uv_tcp_t* handle);
+```
+
+### `uv_tcp_open`
+
+```c
+/*
+ * Opens an existing file descriptor or SOCKET as a tcp handle.
+ */
+int uv_tcp_open(uv_tcp_t* handle, uv_os_sock_t sock);
+```
+
+### `uv_tcp_nodelay`
+
+```c
+/* Enable/disable Nagle's algorithm. */
+int uv_tcp_nodelay(uv_tcp_t* handle, int enable);
+```
+
+### `uv_tcp_keepalive`
+
+```c
+/*
+ * Enable/disable TCP keep-alive.
+ *
+ * `delay` is the initial delay in seconds, ignored when `enable` is zero.
+ */
+int uv_tcp_keepalive(uv_tcp_t* handle, int enable, unsigned int delay);
+```
+### `uv_tcp_simultaneous_accepts`
+
+```c
+/*
+ * Enable/disable simultaneous asynchronous accept requests that are
+ * queued by the operating system when listening for new tcp connections.
+ * This setting is used to tune a tcp server for the desired performance.
+ * Having simultaneous accepts can significantly improve the rate of
+ * accepting connections (which is why it is enabled by default) but
+ * may lead to uneven load distribution in multi-process setups.
+ */
+int uv_tcp_simultaneous_accepts(uv_tcp_t* handle, int enable);
+```
+
+### `uv_tcp_bind`
+
+```c
+/*
+ * Bind the handle to an address and port.  `addr` should point to an
+ * initialized struct sockaddr_in or struct sockaddr_in6.
+ *
+ * When the port is already taken, you can expect to see an UV_EADDRINUSE
+ * error from either uv_tcp_bind(), uv_listen() or uv_tcp_connect().
+ *
+ * That is, a successful call to uv_tcp_bind() does not guarantee that
+ * the call to uv_listen() or uv_tcp_connect() will succeed as well.
+ */
+int uv_tcp_bind(uv_tcp_t* handle, const struct sockaddr* addr);
+```
+
+### `uv_tcp_getsockname`
+
+```c
+int uv_tcp_getsockname(uv_tcp_t* handle, struct sockaddr* name, int* namelen);
+```
+
+### `uv_tcp_getpeername`
+
+```c
+int uv_tcp_getpeername(uv_tcp_t* handle, struct sockaddr* name, int* namelen);
+```
+
+### `uv_tcp_connect`
+
+```c
+/*
+ * Establish an IPv4 or IPv6 TCP connection.  Provide an initialized TCP handle
+ * and an uninitialized uv_connect_t*.  `addr` should point to an initialized
+ * struct sockaddr_in or struct sockaddr_in6.
+ *
+ * The callback is made when the connection has been established or when a
+ * connection error happened.
+ */
+int uv_tcp_connect(uv_connect_t* req, uv_tcp_t* handle, const struct sockaddr* addr, uv_connect_cb cb);
 ```
 
 ## file system
