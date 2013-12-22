@@ -95,6 +95,9 @@
 	- [`uv_timer_again`](#uv_timer_again)
 	- [`uv_timer_set_repeat`](#uv_timer_set_repeat)
 	- [`uv_timer_get_repeat`](#uv_timer_get_repeat)
+- [addrinfo](#addrinfo)
+	- [`uv_getaddrinfo`](#uv_getaddrinfo)
+	- [`uv_freeaddrinfo`](#uv_freeaddrinfo)
 - [files](#files)
 	- [`uv_guess_handle`](#uv_guess_handle)
 - [errors](#errors)
@@ -1121,6 +1124,47 @@ void uv_timer_set_repeat(uv_timer_t* handle, uint64_t repeat);
 ```c
 uint64_t uv_timer_get_repeat(const uv_timer_t* handle);
 ```
+
+# addrinfo
+
+## `uv_getaddrinfo`
+
+```c
+/*
+ * Asynchronous getaddrinfo(3).
+ *
+ * Either node or service may be NULL but not both.
+ *
+ * hints is a pointer to a struct addrinfo with additional address type
+ * constraints, or NULL. Consult `man -s 3 getaddrinfo` for details.
+ *
+ * Returns 0 on success or an error code < 0 on failure.
+ *
+ * If successful, your callback gets called sometime in the future with the
+ * lookup result, which is either:
+ *
+ *  a) err == 0, the res argument points to a valid struct addrinfo, or
+ *  b) err < 0, the res argument is NULL. See the UV_EAI_* constants.
+ *
+ * Call uv_freeaddrinfo() to free the addrinfo structure.
+ */
+int uv_getaddrinfo(uv_loop_t* loop,
+                    uv_getaddrinfo_t* req,
+                    uv_getaddrinfo_cb getaddrinfo_cb,
+                    const char* node,
+                    const char* service,
+                    const struct addrinfo* hints);
+```
+
+## `uv_freeaddrinfo`
+
+```c
+/*
+ * Free the struct addrinfo. Passing NULL is allowed and is a no-op.
+ */
+void uv_freeaddrinfo(struct addrinfo* ai);
+```
+
 
 
 # files
