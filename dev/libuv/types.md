@@ -21,8 +21,12 @@
 		- [`uv_pipe_t : uv_stream_t`](#uv_pipe_t--uv_stream_t)
 	- [udp](#udp)
 		- [`uv_udp_t : uv_handle_t`](#uv_udp_t--uv_handle_t)
-	- [`uv_poll_t : uv_handle_t`](#uv_poll_t--uv_handle_t)
-	- [`uv_prepare_t : uv_handle_t`](#uv_prepare_t--uv_handle_t)
+	- [poll](#poll)
+		- [`uv_poll_t : uv_handle_t`](#uv_poll_t--uv_handle_t)
+	- [prepare](#prepare)
+		- [`uv_prepare_t : uv_handle_t`](#uv_prepare_t--uv_handle_t)
+	- [idle](#idle)
+		- [`uv_idle_t : uv_handle_t`](#uv_idle_t--uv_handle_t)
 - [file info](#file-info)
 	- [`uv_stat_t`](#uv_stat_t)
 		- [`uv_timespec_t`](#uv_timespec_t)
@@ -354,7 +358,9 @@ struct uv_udp_s {
 };
 ```
 
-## `uv_poll_t : uv_handle_t`
+## poll
+
+### `uv_poll_t : uv_handle_t`
 
 ```c
 /*
@@ -393,7 +399,9 @@ struct uv_poll_s {
 };
 ```
 
-## `uv_prepare_t : uv_handle_t`
+## prepare
+
+### `uv_prepare_t : uv_handle_t`
 
 ```c
 /*
@@ -409,6 +417,25 @@ struct uv_prepare_s {
 };
 ```
 
+## idle
+
+### `uv_idle_t : uv_handle_t`
+
+```c
+/*
+ * uv_idle_t is a subclass of uv_handle_t.
+ *
+ * Every active idle handle gets its callback called repeatedly until it is
+ * stopped. This happens after all other types of callbacks are processed.
+ * When there are multiple "idle" handles active, their callbacks are called
+ * in turn.
+ */
+struct uv_idle_s {
+  // UV_IDLE_PRIVATE_FIELDS (include/uv-unix.h)
+  uv_idle_cb idle_cb;
+  void* queue[2];
+};
+```
 
 # file info
 

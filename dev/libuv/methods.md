@@ -81,6 +81,10 @@
 	- [`uv_prepare_init`](#uv_prepare_init)
 	- [`uv_prepare_start`](#uv_prepare_start)
 	- [`uv_prepare_stop`](#uv_prepare_stop)
+- [idle](#idle)
+	- [`uv_idle_init`](#uv_idle_init)
+	- [`uv_idle_start`](#uv_idle_start)
+	- [`uv_idle_stop`](#uv_idle_stop)
 - [files](#files)
 	- [`uv_guess_handle`](#uv_guess_handle)
 - [errors](#errors)
@@ -1001,6 +1005,26 @@ int uv_prepare_start(uv_prepare_t* prepare, uv_prepare_cb cb);
 
 ```c
 int uv_prepare_stop(uv_prepare_t* prepare);
+```
+
+# idle
+
+## `uv_idle_init`
+
+```c
+int uv_idle_init(uv_loop_t*, uv_idle_t* idle);
+```
+
+## `uv_idle_start`
+
+```c
+int uv_idle_start(uv_idle_t* idle, uv_idle_cb cb);
+```
+
+## `uv_idle_stop`
+
+```c
+int uv_idle_stop(uv_idle_t* idle);
 ```
 
 
