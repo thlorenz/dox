@@ -23,8 +23,6 @@
 	- [`uv_close`](#uv_close)
 - [requests](#requests)
 	- [`uv_req_size`](#uv_req_size)
-- [buffers](#buffers)
-	- [`uv_buf_t `](#uv_buf_t-)
 - [streams](#streams)
 	- [`uv_listen`](#uv_listen)
 	- [`uv_accept`](#uv_accept)
@@ -102,6 +100,20 @@
 	- [`uv_spawn`](#uv_spawn)
 	- [`uv_process_kill`](#uv_process_kill)
 	- [`uv_kill`](#uv_kill)
+	- [`uv_setup_args`](#uv_setup_args)
+	- [`uv_get_process_title`](#uv_get_process_title)
+	- [`uv_set_process_title`](#uv_set_process_title)
+	- [`uv_resident_set_memory`](#uv_resident_set_memory)
+	- [`uv_uptime`](#uv_uptime)
+- [work queue](#work-queue)
+	- [`uv_queue_work`](#uv_queue_work)
+	- [`uv_cancel`](#uv_cancel)
+- [cpu info](#cpu-info)
+	- [`uv_cpu_info`](#uv_cpu_info)
+	- [`uv_free_cpu_info`](#uv_free_cpu_info)
+- [interface addresses](#interface-addresses)
+	- [`uv_interface_addresses`](#uv_interface_addresses)
+	- [`uv_free_interface_addresses`](#uv_free_interface_addresses)
 - [files](#files)
 	- [`uv_guess_handle`](#uv_guess_handle)
 - [errors](#errors)
@@ -349,21 +361,6 @@ void uv_close(uv_handle_t* handle, uv_close_cb close_cb);
  * Returns size of request types, useful for dynamic lookup with FFI
  */
 size_t uv_req_size(uv_req_type type);
-```
-
-# buffers
-
-
-## `uv_buf_t `
-
-```c
-/*
- * Constructor for uv_buf_t.
- * Due to platform differences the user cannot rely on the ordering of the
- * base and len members of the uv_buf_t struct. The user is responsible for
- * freeing base after the uv_buf_t is done. Return struct passed by value.
- */
-UV_EXTERN uv_buf_t uv_buf_init(char* base, unsigned int len);
 ```
 
 # streams
@@ -1207,7 +1204,109 @@ int uv_process_kill(uv_process_t*, int signum);
 int uv_kill(int pid, int signum);
 ```
 
+## `uv_setup_args`
 
+```c
+char** uv_setup_args(int argc, char** argv);
+```
+
+## `uv_get_process_title`
+
+```c
+int uv_get_process_title(char* buffer, size_t size);
+```
+
+## `uv_set_process_title`
+
+```c
+int uv_set_process_title(const char* title);
+```
+
+## `uv_resident_set_memory`
+
+```c
+int uv_resident_set_memory(size_t* rss);
+```
+
+## `uv_uptime`
+
+```c
+int uv_uptime(double* uptime);
+```
+
+
+# work queue
+
+## `uv_queue_work`
+
+```c
+/* Queues a work request to execute asynchronously on the thread pool. */
+int uv_queue_work(uv_loop_t* loop, uv_work_t* req, uv_work_cb work_cb, uv_after_work_cb after_work_cb);
+```
+
+## `uv_cancel`
+
+```c
+/* Cancel a pending request. Fails if the request is executing or has finished
+ * executing.
+ *
+ * Returns 0 on success, or an error code < 0 on failure.
+ *
+ * Only cancellation of uv_fs_t, uv_getaddrinfo_t and uv_work_t requests is
+ * currently supported.
+ *
+ * Cancelled requests have their callbacks invoked some time in the future.
+ * It's _not_ safe to free the memory associated with the request until your
+ * callback is called.
+ *
+ * Here is how cancellation is reported to your callback:
+ *
+ * - A uv_fs_t request has its req->result field set to UV_ECANCELED.
+ *
+ * - A uv_work_t or uv_getaddrinfo_t request has its callback invoked with
+ *   status == UV_ECANCELED.
+ *
+ * This function is currently only implemented on UNIX platforms. On Windows,
+ * it always returns UV_ENOSYS.
+ */
+int uv_cancel(uv_req_t* req);
+```
+
+# cpu info
+
+## `uv_cpu_info`
+
+```c
+/*
+ * This allocates cpu_infos array, and sets count.  The array
+ * is freed using uv_free_cpu_info().
+ */
+int uv_cpu_info(uv_cpu_info_t** cpu_infos, int* count);
+```
+
+## `uv_free_cpu_info`
+
+```c
+void uv_free_cpu_info(uv_cpu_info_t* cpu_infos, int count);
+```
+
+# interface addresses
+
+## `uv_interface_addresses`
+
+```c
+/*
+ * This allocates addresses array, and sets count.  The array
+ * is freed using uv_free_interface_addresses().
+ */
+int uv_interface_addresses(uv_interface_address_t** addresses, int* count);
+```
+
+## `uv_free_interface_addresses`
+
+```c
+void uv_free_interface_addresses(uv_interface_address_t* addresses, int count);
+```
 
 # files
 

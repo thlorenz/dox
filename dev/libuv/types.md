@@ -12,6 +12,8 @@
 	- [`uv_fs_t : uv_req_t`](#uv_fs_t--uv_req_t)
 	- [`uv_work_t : uv_req_t`](#uv_work_t--uv_req_t)
 	- [`uv_connect_t : uv_req_t`](#uv_connect_t--uv_req_t-1)
+- [buffers](#buffers)
+	- [`uv_buf_t `](#uv_buf_t-)
 - [handles](#handles)
 	- [`uv_handle_t`](#uv_handle_t)
 	- [streams](#streams)
@@ -33,6 +35,10 @@
 		- [`uv_timer_t : uv_handle_t`](#uv_timer_t--uv_handle_t)
 	- [process](#process)
 		- [`uv_process_t : uv_handle_t`](#uv_process_t--uv_handle_t)
+- [cpu info](#cpu-info)
+	- [`uv_cpu_info_t`](#uv_cpu_info_t)
+- [interface address](#interface-address)
+	- [`uv_interface_address_t`](#uv_interface_address_t)
 - [file info](#file-info)
 	- [`uv_stat_t`](#uv_stat_t)
 		- [`uv_timespec_t`](#uv_timespec_t)
@@ -257,6 +263,21 @@ struct uv_connect_s {
   // UV_CONNECT_PRIVATE_FIELDS (include/uv-unix.h)
   void* queue[2];
 };
+```
+
+# buffers
+
+
+## `uv_buf_t `
+
+```c
+/*
+ * Constructor for uv_buf_t.
+ * Due to platform differences the user cannot rely on the ordering of the
+ * base and len members of the uv_buf_t struct. The user is responsible for
+ * freeing base after the uv_buf_t is done. Return struct passed by value.
+ */
+UV_EXTERN uv_buf_t uv_buf_init(char* base, unsigned int len);
 ```
 
 # handles
@@ -499,6 +520,44 @@ struct uv_process_s {
   // UV_PROCESS_PRIVATE_FIELDS (include/uv-unix.h)
   void* queue[2];
   int status;
+};
+```
+
+# cpu info
+
+## `uv_cpu_info_t`
+
+```c
+struct uv_cpu_info_s {
+  char* model;
+  int speed;
+  struct uv_cpu_times_s {
+    uint64_t user;
+    uint64_t nice;
+    uint64_t sys;
+    uint64_t idle;
+    uint64_t irq;
+  } cpu_times;
+};
+```
+
+# interface address
+
+## `uv_interface_address_t`
+
+```c
+struct uv_interface_address_s {
+  char* name;
+  char phys_addr[6];
+  int is_internal;
+  union {
+    struct sockaddr_in address4;
+    struct sockaddr_in6 address6;
+  } address;
+  union {
+    struct sockaddr_in netmask4;
+    struct sockaddr_in6 netmask6;
+  } netmask;
 };
 ```
 
