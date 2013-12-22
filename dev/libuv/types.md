@@ -20,6 +20,8 @@
 		- [`uv_tty_t`](#uv_tty_t)
 	- [udp](#udp)
 		- [`uv_udp_t](#uv_udp_t)
+	- [pipe](#pipe)
+		- [`uv_pipe_t`](#uv_pipe_t)
 - [file info](#file-info)
 	- [`uv_stat_t`](#uv_stat_t)
 		- [`uv_timespec_t`](#uv_timespec_t)
@@ -332,6 +334,25 @@ struct uv_udp_s {
   void* write_completed_queue[2];
 };
 ```
+
+## pipe
+
+### `uv_pipe_t`
+
+```c
+/*
+ * Representing a pipe stream or pipe server. On Windows this is a Named
+ * Pipe. On Unix this is a UNIX domain socket.
+ */
+struct uv_pipe_s {
+  int ipc; /* non-zero if this pipe is used for passing handles */
+
+  // UV_PIPE_PRIVATE_FIELDS (include/uv-unix.h)
+  const char* pipe_fname; /* strdup'ed */
+};
+```
+
+
 
 # file info
 

@@ -66,7 +66,14 @@
 	- [`uv_tty_set_mode`](#uv_tty_set_mode)
 	- [`uv_tty_reset_mode`](#uv_tty_reset_mode)
 	- [`uv_tty_get_winsize`](#uv_tty_get_winsize)
-- [file system](#file-system)
+- [pipe](#pipe)
+	- [`uv_pipe_init`](#uv_pipe_init)
+	- [`uv_pipe_open`](#uv_pipe_open)
+	- [`uv_pipe_bind`](#uv_pipe_bind)
+	- [`uv_pipe_connect`](#uv_pipe_connect)
+	- [`uv_pipe_pending_instances`](#uv_pipe_pending_instances)
+- [files](#files)
+	- [`uv_guess_handle`](#uv_guess_handle)
 - [errors](#errors)
 	- [`uv_strerror`](#uv_strerror)
 	- [`uv_err_name`](#uv_err_name)
@@ -867,8 +874,77 @@ int uv_tty_reset_mode(void);
 int uv_tty_get_winsize(uv_tty_t*, int* width, int* height);
 ```
 
+# pipe
 
-# file system
+## `uv_pipe_init`
+
+```c
+/*
+ * Initialize a pipe. The last argument is a boolean to indicate if
+ * this pipe will be used for handle passing between processes.
+ */
+int uv_pipe_init(uv_loop_t*, uv_pipe_t* handle, int ipc);
+```
+
+## `uv_pipe_open`
+
+```c
+/*
+ * Opens an existing file descriptor or HANDLE as a pipe.
+ */
+int uv_pipe_open(uv_pipe_t*, uv_file file);
+```
+
+## `uv_pipe_bind`
+
+```c
+/*
+ * Bind the pipe to a file path (UNIX) or a name (Windows.)
+ *
+ * Paths on UNIX get truncated to `sizeof(sockaddr_un.sun_path)` bytes,
+ * typically between 92 and 108 bytes.
+ */
+int uv_pipe_bind(uv_pipe_t* handle, const char* name);
+```
+
+## `uv_pipe_connect`
+
+```c
+/*
+ * Connect to the UNIX domain socket or the named pipe.
+ *
+ * Paths on UNIX get truncated to `sizeof(sockaddr_un.sun_path)` bytes,
+ * typically between 92 and 108 bytes.
+ */
+void uv_pipe_connect(uv_connect_t* req, uv_pipe_t* handle, const char* name, uv_connect_cb cb);
+```
+
+## `uv_pipe_pending_instances`
+
+```c
+/*
+ * This setting applies to Windows only.
+ * Set the number of pending pipe instance handles when the pipe server
+ * is waiting for connections.
+ */
+void uv_pipe_pending_instances(uv_pipe_t* handle, int count);
+```
+
+
+# files
+
+## `uv_guess_handle`
+
+```c
+/*
+ * Used to detect what type of stream should be used with a given file
+ * descriptor. Usually this will be used during initialization to guess the
+ * type of the stdio streams.
+ * For isatty() functionality use this function and test for UV_TTY.
+ */
+uv_handle_type uv_guess_handle(uv_file file);
+```
+
 
 # errors
 
