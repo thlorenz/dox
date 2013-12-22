@@ -114,8 +114,48 @@
 - [interface addresses](#interface-addresses)
 	- [`uv_interface_addresses`](#uv_interface_addresses)
 	- [`uv_free_interface_addresses`](#uv_free_interface_addresses)
-- [files](#files)
+- [file system](#file-system)
+	- [`uv_fs_req_cleanup`](#uv_fs_req_cleanup)
+	- [`uv_fs_close`](#uv_fs_close)
+	- [`uv_fs_open`](#uv_fs_open)
+	- [`uv_fs_read`](#uv_fs_read)
+	- [`uv_fs_unlink`](#uv_fs_unlink)
+	- [`uv_fs_write`](#uv_fs_write)
+	- [`uv_fs_mkdir`](#uv_fs_mkdir)
+	- [`uv_fs_rmdir`](#uv_fs_rmdir)
+	- [`uv_fs_readdir`](#uv_fs_readdir)
+	- [`uv_fs_stat`](#uv_fs_stat)
+	- [`uv_fs_fstat`](#uv_fs_fstat)
+	- [`uv_fs_rename`](#uv_fs_rename)
+	- [`uv_fs_fsync`](#uv_fs_fsync)
+	- [`uv_fs_fdatasync`](#uv_fs_fdatasync)
+	- [`uv_fs_ftruncate`](#uv_fs_ftruncate)
+	- [`uv_fs_sendfile`](#uv_fs_sendfile)
+	- [`uv_fs_chmod`](#uv_fs_chmod)
+	- [`uv_fs_utime`](#uv_fs_utime)
+	- [`uv_fs_futime`](#uv_fs_futime)
+	- [`uv_fs_lstat`](#uv_fs_lstat)
+	- [`uv_fs_link`](#uv_fs_link)
+	- [`uv_fs_symlink`](#uv_fs_symlink)
+	- [`uv_fs_readlink`](#uv_fs_readlink)
+	- [`uv_fs_fchmod`](#uv_fs_fchmod)
+	- [`uv_fs_chown`](#uv_fs_chown)
+	- [`uv_fs_fchown`](#uv_fs_fchown)
 	- [`uv_guess_handle`](#uv_guess_handle)
+	- [fs poll](#fs-poll)
+		- [`uv_fs_poll_init`](#uv_fs_poll_init)
+		- [`uv_fs_poll_start`](#uv_fs_poll_start)
+		- [`uv_fs_poll_stop`](#uv_fs_poll_stop)
+	- [fs event](#fs-event)
+		- [`uv_fs_event_init`](#uv_fs_event_init)
+		- [`uv_fs_event_start`](#uv_fs_event_start)
+		- [`uv_fs_event_stop`](#uv_fs_event_stop)
+- [signal](#signal)
+	- [`uv_signal_init`](#uv_signal_init)
+	- [`uv_signal_start`](#uv_signal_start)
+	- [`uv_signal_stop`](#uv_signal_stop)
+- [load average](#load-average)
+	- [`uv_loadavg`](#uv_loadavg)
 - [errors](#errors)
 	- [`uv_strerror`](#uv_strerror)
 	- [`uv_err_name`](#uv_err_name)
@@ -1308,7 +1348,291 @@ int uv_interface_addresses(uv_interface_address_t** addresses, int* count);
 void uv_free_interface_addresses(uv_interface_address_t* addresses, int count);
 ```
 
-# files
+# file system
+
+
+File System Methods.
+
+The `uv_fs_*` functions execute a blocking system call asynchronously (in a
+thread pool) and call the specified callback in the specified loop after
+completion. If the user gives NULL as the callback the blocking system
+call will be called synchronously. req should be a pointer to an
+uninitialized `uv_fs_t` object.
+
+`uv_fs_req_cleanup()` must be called after completion of the `uv_fs_` 
+function to free any internal memory allocations associated with the
+request.
+
+## `uv_fs_req_cleanup`
+
+```c
+void uv_fs_req_cleanup(uv_fs_t* req);
+```
+
+## `uv_fs_close`
+
+```c
+int uv_fs_close(uv_loop_t* loop, uv_fs_t* req, uv_file file, uv_fs_cb cb);
+```
+
+## `uv_fs_open`
+
+```c
+int uv_fs_open(uv_loop_t* loop,
+               uv_fs_t* req,
+               const char* path,
+               int flags,
+               int mode,
+               uv_fs_cb cb);
+```
+
+## `uv_fs_read`
+
+```c
+int uv_fs_read(uv_loop_t* loop,
+               uv_fs_t* req,
+               uv_file file,
+               void* buf,
+               size_t length,
+               int64_t offset,
+               uv_fs_cb cb);
+```
+
+## `uv_fs_unlink`
+
+```c
+int uv_fs_unlink(uv_loop_t* loop,
+                 uv_fs_t* req,
+                 const char* path,
+                 uv_fs_cb cb);
+```
+
+## `uv_fs_write`
+
+```c
+int uv_fs_write(uv_loop_t* loop,
+                uv_fs_t* req,
+                uv_file file,
+                const void* buf,
+                size_t length,
+                int64_t offset,
+                uv_fs_cb cb);
+```
+
+## `uv_fs_mkdir`
+
+```c
+int uv_fs_mkdir(uv_loop_t* loop,
+                uv_fs_t* req,
+                const char* path,
+                int mode,
+                uv_fs_cb cb);
+```
+
+## `uv_fs_rmdir`
+
+```c
+int uv_fs_rmdir(uv_loop_t* loop,
+                uv_fs_t* req,
+                const char* path,
+                uv_fs_cb cb);
+```
+
+## `uv_fs_readdir`
+
+```c
+int uv_fs_readdir(uv_loop_t* loop,
+                  uv_fs_t* req,
+                  const char* path,
+                  int flags,
+                  uv_fs_cb cb);
+```
+
+## `uv_fs_stat`
+
+```c
+int uv_fs_stat(uv_loop_t* loop,
+               uv_fs_t* req,
+               const char* path,
+               uv_fs_cb cb);
+```
+
+## `uv_fs_fstat`
+
+```c
+int uv_fs_fstat(uv_loop_t* loop,
+                uv_fs_t* req,
+                uv_file file,
+                uv_fs_cb cb);
+```
+
+## `uv_fs_rename`
+
+```c
+int uv_fs_rename(uv_loop_t* loop,
+                 uv_fs_t* req,
+                 const char* path,
+                 const char* new_path,
+                 uv_fs_cb cb);
+```
+
+## `uv_fs_fsync`
+
+```c
+int uv_fs_fsync(uv_loop_t* loop,
+                uv_fs_t* req,
+                uv_file file,
+                uv_fs_cb cb);
+```
+
+## `uv_fs_fdatasync`
+
+```c
+int uv_fs_fdatasync(uv_loop_t* loop,
+                    uv_fs_t* req,
+                    uv_file file,
+                    uv_fs_cb cb);
+```
+
+## `uv_fs_ftruncate`
+
+```c
+int uv_fs_ftruncate(uv_loop_t* loop,
+                    uv_fs_t* req,
+                    uv_file file,
+                    int64_t offset,
+                    uv_fs_cb cb);
+```
+
+## `uv_fs_sendfile`
+
+```c
+int uv_fs_sendfile(uv_loop_t* loop,
+                   uv_fs_t* req,
+                   uv_file out_fd,
+                   uv_file in_fd,
+                   int64_t in_offset,
+                   size_t length,
+                   uv_fs_cb cb);
+```
+
+## `uv_fs_chmod`
+
+```c
+int uv_fs_chmod(uv_loop_t* loop,
+                uv_fs_t* req,
+                const char* path,
+                int mode,
+                uv_fs_cb cb);
+```
+
+## `uv_fs_utime`
+
+```c
+int uv_fs_utime(uv_loop_t* loop,
+                uv_fs_t* req,
+                const char* path,
+                double atime,
+                double mtime,
+                uv_fs_cb cb);
+```
+
+## `uv_fs_futime`
+
+```c
+int uv_fs_futime(uv_loop_t* loop,
+                 uv_fs_t* req,
+                 uv_file file,
+                 double atime,
+                 double mtime,
+                 uv_fs_cb cb);
+```
+
+## `uv_fs_lstat`
+
+```c
+int uv_fs_lstat(uv_loop_t* loop,
+                uv_fs_t* req,
+                const char* path,
+                uv_fs_cb cb);
+```
+
+## `uv_fs_link`
+
+```c
+int uv_fs_link(uv_loop_t* loop,
+               uv_fs_t* req,
+               const char* path,
+               const char* new_path,
+               uv_fs_cb cb);
+```
+
+## `uv_fs_symlink`
+
+```c
+/*
+ * This flag can be used with uv_fs_symlink on Windows
+ * to specify whether path argument points to a directory.
+ */
+#define UV_FS_SYMLINK_DIR          0x0001
+
+/*
+ * This flag can be used with uv_fs_symlink on Windows
+ * to specify whether the symlink is to be created using junction points.
+ */
+#define UV_FS_SYMLINK_JUNCTION     0x0002
+```
+
+```c
+int uv_fs_symlink(uv_loop_t* loop,
+                  uv_fs_t* req,
+                  const char* path,
+                  const char* new_path,
+                  int flags,
+                  uv_fs_cb cb);
+```
+
+## `uv_fs_readlink`
+
+```c
+int uv_fs_readlink(uv_loop_t* loop,
+                   uv_fs_t* req,
+                   const char* path,
+                   uv_fs_cb cb);
+```
+
+## `uv_fs_fchmod`
+
+```c
+int uv_fs_fchmod(uv_loop_t* loop,
+                 uv_fs_t* req,
+                 uv_file file,
+                 int mode,
+                 uv_fs_cb cb);
+```
+
+## `uv_fs_chown`
+
+```c
+int uv_fs_chown(uv_loop_t* loop,
+                uv_fs_t* req,
+                const char* path,
+                uv_uid_t uid,
+                uv_gid_t gid,
+                uv_fs_cb cb);
+```
+
+## `uv_fs_fchown`
+
+```c
+int uv_fs_fchown(uv_loop_t* loop,
+                 uv_fs_t* req,
+                 uv_file file,
+                 uv_uid_t uid,
+                 uv_gid_t gid,
+                 uv_fs_cb cb);
+```
+
 
 ## `uv_guess_handle`
 
@@ -1320,6 +1644,103 @@ void uv_free_interface_addresses(uv_interface_address_t* addresses, int count);
  * For isatty() functionality use this function and test for UV_TTY.
  */
 uv_handle_type uv_guess_handle(uv_file file);
+```
+
+## fs poll
+
+`uv_fs_stat()` based polling file watcher.
+
+### `uv_fs_poll_init`
+
+```c
+int uv_fs_poll_init(uv_loop_t* loop, uv_fs_poll_t* handle);
+```
+
+### `uv_fs_poll_start`
+
+```c
+/*
+ * Check the file at `path` for changes every `interval` milliseconds.
+ *
+ * Your callback is invoked with `status < 0` if `path` does not exist
+ * or is inaccessible. The watcher is *not* stopped but your callback is
+ * not called again until something changes (e.g. when the file is created
+ * or the error reason changes).
+ *
+ * When `status == 0`, your callback receives pointers to the old and new
+ * `uv_stat_t` structs. They are valid for the duration of the callback
+ * only!
+ *
+ * For maximum portability, use multi-second intervals. Sub-second intervals
+ * will not detect all changes on many file systems.
+ */
+int uv_fs_poll_start(uv_fs_poll_t* handle,
+                     uv_fs_poll_cb poll_cb,
+                     const char* path,
+                     unsigned int interval);
+```
+
+### `uv_fs_poll_stop`
+
+```c
+int uv_fs_poll_stop(uv_fs_poll_t* handle);
+```
+
+## fs event
+
+### `uv_fs_event_init`
+
+```c
+int uv_fs_event_init(uv_loop_t* loop, uv_fs_event_t* handle);
+```
+
+### `uv_fs_event_start`
+
+```c
+int uv_fs_event_start(uv_fs_event_t* handle,
+                      uv_fs_event_cb cb,
+                      const char* filename,
+                      unsigned int flags);
+```
+
+### `uv_fs_event_stop`
+
+```c
+int uv_fs_event_stop(uv_fs_event_t* handle);
+```
+
+
+# signal
+
+## `uv_signal_init`
+
+```c
+int uv_signal_init(uv_loop_t* loop, uv_signal_t* handle);
+```
+
+## `uv_signal_start`
+
+```c
+int uv_signal_start(uv_signal_t* handle, uv_signal_cb signal_cb, int signum);
+```
+
+## `uv_signal_stop`
+
+```c
+int uv_signal_stop(uv_signal_t* handle);
+```
+
+# load average
+
+## `uv_loadavg`
+
+```c
+/*
+ * Gets load average.
+ * See: http://en.wikipedia.org/wiki/Load_(computing)
+ * Returns [0,0,0] on Windows.
+ */
+void uv_loadavg(double avg[3]);
 ```
 
 

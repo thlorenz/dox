@@ -12,6 +12,7 @@
 	- [`uv_fs_t : uv_req_t`](#uv_fs_t--uv_req_t)
 	- [`uv_work_t : uv_req_t`](#uv_work_t--uv_req_t)
 	- [`uv_connect_t : uv_req_t`](#uv_connect_t--uv_req_t-1)
+		- [`uv_fs_t`](#uv_fs_t)
 - [buffers](#buffers)
 	- [`uv_buf_t `](#uv_buf_t-)
 - [handles](#handles)
@@ -35,6 +36,11 @@
 		- [`uv_timer_t : uv_handle_t`](#uv_timer_t--uv_handle_t)
 	- [process](#process)
 		- [`uv_process_t : uv_handle_t`](#uv_process_t--uv_handle_t)
+	- [file system](#file-system)
+		- [`uv_fs_event_t : uv_handle_t`](#uv_fs_event_t--uv_handle_t)
+		- [`uv_fs_poll_t : uv_handle_t`](#uv_fs_poll_t--uv_handle_t)
+- [signal](#signal)
+		- [`uv_signal_t`](#uv_signal_t)
 - [cpu info](#cpu-info)
 	- [`uv_cpu_info_t`](#uv_cpu_info_t)
 - [interface address](#interface-address)
@@ -54,6 +60,9 @@
 	- [`uv_poll_event`](#uv_poll_event)
 	- [`uv_stdio_flags`](#uv_stdio_flags)
 	- [`uv_process_flags`](#uv_process_flags)
+	- [`uv_fs_type`](#uv_fs_type)
+	- [`uv_fs_event`](#uv_fs_event)
+	- [`uv_fs_event_flags`](#uv_fs_event_flags)
 
 # loop
 
@@ -262,6 +271,34 @@ struct uv_connect_s {
 
   // UV_CONNECT_PRIVATE_FIELDS (include/uv-unix.h)
   void* queue[2];
+};
+```
+
+### `uv_fs_t`
+
+```c
+struct uv_fs_s {
+  uv_fs_type fs_type;
+  uv_loop_t* loop;
+  uv_fs_cb cb;
+  ssize_t result;
+  void* ptr;
+  const char* path;
+  uv_stat_t statbuf;  /* Stores the result of uv_fs_stat and uv_fs_fstat. */
+
+  // UV_FS_PRIVATE_FIELDS (include/uv-unix.h)
+  const char *new_path;
+  uv_file file;
+  int flags;
+  mode_t mode;
+  void* buf;
+  size_t len;
+  off_t off;
+  uv_uid_t uid;
+  uv_gid_t gid;
+  double atime;
+  double mtime;
+  struct uv__work work_req;
 };
 ```
 
@@ -520,6 +557,87 @@ struct uv_process_s {
   // UV_PROCESS_PRIVATE_FIELDS (include/uv-unix.h)
   void* queue[2];
   int status;
+};
+```
+
+## file system
+
+### `uv_fs_event_t : uv_handle_t`
+
+```c
+struct uv_fs_event_s {
+  char* filename;
+
+  // UV_FS_EVENT_PRIVATE_FIELDS (include/uv-unix.h)
+  uv_fs_event_cb cb;
+  UV_PLATFORM_FS_EVENT_FIELDS
+};
+```
+
+### `uv_fs_poll_t : uv_handle_t`
+
+```c
+struct uv_fs_poll_s {
+  /* Private, don't touch. */
+  void* poll_ctx;
+};
+```
+
+# signal
+
+### `uv_signal_t`
+
+```c
+/*
+ * UNIX signal handling on a per-event loop basis. The implementation is not
+ * ultra efficient so don't go creating a million event loops with a million
+ * signal watchers.
+ *
+ * Note to Linux users: SIGRT0 and SIGRT1 (signals 32 and 33) are used by the
+ * NPTL pthreads library to manage threads. Installing watchers for those
+ * signals will lead to unpredictable behavior and is strongly discouraged.
+ * Future versions of libuv may simply reject them.
+ *
+ * Some signal support is available on Windows:
+ *
+ *   SIGINT is normally delivered when the user presses CTRL+C. However, like
+ *   on Unix, it is not generated when terminal raw mode is enabled.
+ *
+ *   SIGBREAK is delivered when the user pressed CTRL+BREAK.
+ *
+ *   SIGHUP is generated when the user closes the console window. On SIGHUP the
+ *   program is given approximately 10 seconds to perform cleanup. After that
+ *   Windows will unconditionally terminate it.
+ *
+ *   SIGWINCH is raised whenever libuv detects that the console has been
+ *   resized. SIGWINCH is emulated by libuv when the program uses an uv_tty_t
+ *   handle to write to the console. SIGWINCH may not always be delivered in a
+ *   timely manner; libuv will only detect size changes when the cursor is
+ *   being moved. When a readable uv_tty_handle is used in raw mode, resizing
+ *   the console buffer will also trigger a SIGWINCH signal.
+ *
+ * Watchers for other signals can be successfully created, but these signals
+ * are never generated. These signals are: SIGILL, SIGABRT, SIGFPE, SIGSEGV,
+ * SIGTERM and SIGKILL.
+ *
+ * Note that calls to raise() or abort() to programmatically raise a signal are
+ * not detected by libuv; these will not trigger a signal watcher.
+ */
+struct uv_signal_s {
+  uv_signal_cb signal_cb;
+  int signum;
+
+  // UV_SIGNAL_PRIVATE_FIELDS (include/uv-unix.h)
+  /* RB_ENTRY(uv_signal_s) tree_entry; */                                     \
+  struct {                                                                    \
+    struct uv_signal_s* rbe_left;                                             \
+    struct uv_signal_s* rbe_right;                                            \
+    struct uv_signal_s* rbe_parent;                                           \
+    int rbe_color;                                                            \
+  } tree_entry;                                                               \
+  /* Use two counters here so we don have to fiddle with atomics. */          \
+  unsigned int caught_signals;                                                \
+  unsigned int dispatched_signals;
 };
 ```
 
@@ -874,4 +992,80 @@ enum uv_process_flags {
    */
   UV_PROCESS_WINDOWS_HIDE = (1 << 4)
 };
-``
+```
+
+## `uv_fs_type`
+
+```c
+typedef enum {
+  UV_FS_UNKNOWN = -1,
+  UV_FS_CUSTOM,
+  UV_FS_OPEN,
+  UV_FS_CLOSE,
+  UV_FS_READ,
+  UV_FS_WRITE,
+  UV_FS_SENDFILE,
+  UV_FS_STAT,
+  UV_FS_LSTAT,
+  UV_FS_FSTAT,
+  UV_FS_FTRUNCATE,
+  UV_FS_UTIME,
+  UV_FS_FUTIME,
+  UV_FS_CHMOD,
+  UV_FS_FCHMOD,
+  UV_FS_FSYNC,
+  UV_FS_FDATASYNC,
+  UV_FS_UNLINK,
+  UV_FS_RMDIR,
+  UV_FS_MKDIR,
+  UV_FS_RENAME,
+  UV_FS_READDIR,
+  UV_FS_LINK,
+  UV_FS_SYMLINK,
+  UV_FS_READLINK,
+  UV_FS_CHOWN,
+  UV_FS_FCHOWN
+} uv_fs_type;
+```
+
+## `uv_fs_event`
+
+```c
+enum uv_fs_event {
+  UV_RENAME = 1,
+  UV_CHANGE = 2
+};
+```
+
+## `uv_fs_event_flags`
+
+Flags to be passed to `uv_fs_event_start`.
+
+```c
+enum uv_fs_event_flags {
+  /*
+   * By default, if the fs event watcher is given a directory name, we will
+   * watch for all events in that directory. This flags overrides this behavior
+   * and makes fs_event report only changes to the directory entry itself. This
+   * flag does not affect individual files watched.
+   * This flag is currently not implemented yet on any backend.
+   */
+  UV_FS_EVENT_WATCH_ENTRY = 1,
+
+  /*
+   * By default uv_fs_event will try to use a kernel interface such as inotify
+   * or kqueue to detect events. This may not work on remote filesystems such
+   * as NFS mounts. This flag makes fs_event fall back to calling stat() on a
+   * regular interval.
+   * This flag is currently not implemented yet on any backend.
+   */
+  UV_FS_EVENT_STAT = 2,
+
+  /*
+   * By default, event watcher, when watching directory, is not registering
+   * (is ignoring) changes in it's subdirectories.
+   * This flag will override this behaviour on platforms that support it.
+   */
+  UV_FS_EVENT_RECURSIVE = 4
+};
+```
