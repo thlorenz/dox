@@ -31,15 +31,23 @@
 		- [`uv_async_t : uv_handle_t`](#uv_async_t--uv_handle_t)
 	- [timer](#timer)
 		- [`uv_timer_t : uv_handle_t`](#uv_timer_t--uv_handle_t)
+	- [process](#process)
+		- [`uv_process_t : uv_handle_t`](#uv_process_t--uv_handle_t)
 - [file info](#file-info)
 	- [`uv_stat_t`](#uv_stat_t)
 		- [`uv_timespec_t`](#uv_timespec_t)
+- [stdio](#stdio)
+	- [`uv_stdio_container_t`](#uv_stdio_container_t)
+- [process](#process-1)
+	- [`uv_process_options_t`](#uv_process_options_t)
 - [enumerations](#enumerations)
 	- [`uv_errno_t`](#uv_errno_t)
 	- [`uv_handle_type`](#uv_handle_type)
 	- [`uv_req_type`](#uv_req_type)
 	- [`uv_udp_flags`](#uv_udp_flags)
 	- [`uv_poll_event`](#uv_poll_event)
+	- [`uv_stdio_flags`](#uv_stdio_flags)
+	- [`uv_process_flags`](#uv_process_flags)
 
 # loop
 
@@ -479,6 +487,21 @@ struct uv_timer_s {
 };
 ```
 
+## process
+
+### `uv_process_t : uv_handle_t`
+
+```c
+struct uv_process_s {
+  uv_exit_cb exit_cb;
+  int pid;
+
+  // UV_PROCESS_PRIVATE_FIELDS (include/uv-unix.h)
+  void* queue[2];
+  int status;
+};
+```
+
 # file info
 
 ## `uv_stat_t`
@@ -511,6 +534,72 @@ typedef struct {
   long tv_sec;
   long tv_nsec;
 };
+```
+
+# stdio
+
+## `uv_stdio_container_t`
+
+```c
+typedef struct uv_stdio_container_s {
+  uv_stdio_flags flags;
+
+  union {
+    uv_stream_t* stream;
+    int fd;
+  } data;
+} uv_stdio_container_t;
+```
+
+# process
+
+## `uv_process_options_t`
+
+```c
+typedef struct uv_process_options_s {
+  uv_exit_cb exit_cb; /* Called after the process exits. */
+  const char* file; /* Path to program to execute. */
+  /*
+   * Command line arguments. args[0] should be the path to the program. On
+   * Windows this uses CreateProcess which concatenates the arguments into a
+   * string this can cause some strange errors. See the note at
+   * windows_verbatim_arguments.
+   */
+  char** args;
+  /*
+   * This will be set as the environ variable in the subprocess. If this is
+   * NULL then the parents environ will be used.
+   */
+  char** env;
+  /*
+   * If non-null this represents a directory the subprocess should execute
+   * in. Stands for current working directory.
+   */
+  const char* cwd;
+  /*
+   * Various flags that control how uv_spawn() behaves. See the definition of
+   * `enum uv_process_flags` below.
+   */
+  unsigned int flags;
+  /*
+   * The `stdio` field points to an array of uv_stdio_container_t structs that
+   * describe the file descriptors that will be made available to the child
+   * process. The convention is that stdio[0] points to stdin, fd 1 is used for
+   * stdout, and fd 2 is stderr.
+   *
+   * Note that on windows file descriptors greater than 2 are available to the
+   * child process only if the child processes uses the MSVCRT runtime.
+   */
+  int stdio_count;
+  uv_stdio_container_t* stdio;
+  /*
+   * Libuv can change the child process' user/group id. This happens only when
+   * the appropriate bits are set in the flags fields. This is not supported on
+   * windows; uv_spawn() will fail and set the error to UV_ENOTSUP.
+   */
+  uv_uid_t uid;
+  uv_gid_t gid;
+} uv_process_options_t;
 ```
 
 # enumerations
@@ -668,3 +757,62 @@ enum uv_poll_event {
   UV_WRITABLE = 2
 };
 ```
+
+## `uv_stdio_flags`
+
+```c
+typedef enum {
+  UV_IGNORE         = 0x00,
+  UV_CREATE_PIPE    = 0x01,
+  UV_INHERIT_FD     = 0x02,
+  UV_INHERIT_STREAM = 0x04,
+
+  /* When UV_CREATE_PIPE is specified, UV_READABLE_PIPE and UV_WRITABLE_PIPE
+   * determine the direction of flow, from the child process' perspective. Both
+   * flags may be specified to create a duplex data stream.
+   */
+  UV_READABLE_PIPE  = 0x10,
+  UV_WRITABLE_PIPE  = 0x20
+} uv_stdio_flags;
+```
+
+## `uv_process_flags`
+
+These are the flags that can be used for the uv_process_options.flags field.
+
+```c
+enum uv_process_flags {
+  /*
+   * Set the child process' user id. The user id is supplied in the `uid` field
+   * of the options struct. This does not work on windows; setting this flag
+   * will cause uv_spawn() to fail.
+   */
+  UV_PROCESS_SETUID = (1 << 0),
+  /*
+   * Set the child process' group id. The user id is supplied in the `gid`
+   * field of the options struct. This does not work on windows; setting this
+   * flag will cause uv_spawn() to fail.
+   */
+  UV_PROCESS_SETGID = (1 << 1),
+  /*
+   * Do not wrap any arguments in quotes, or perform any other escaping, when
+   * converting the argument list into a command line string. This option is
+   * only meaningful on Windows systems. On unix it is silently ignored.
+   */
+  UV_PROCESS_WINDOWS_VERBATIM_ARGUMENTS = (1 << 2),
+  /*
+   * Spawn the child process in a detached state - this will make it a process
+   * group leader, and will effectively enable the child to keep running after
+   * the parent exits.  Note that the child process will still keep the
+   * parent's event loop alive unless the parent process calls uv_unref() on
+   * the child's process handle.
+   */
+  UV_PROCESS_DETACHED = (1 << 3),
+  /*
+   * Hide the subprocess console window that would normally be created. This
+   * option is only meaningful on Windows systems. On unix it is silently
+   * ignored.
+   */
+  UV_PROCESS_WINDOWS_HIDE = (1 << 4)
+};
+``

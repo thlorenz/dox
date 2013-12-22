@@ -98,6 +98,10 @@
 - [addrinfo](#addrinfo)
 	- [`uv_getaddrinfo`](#uv_getaddrinfo)
 	- [`uv_freeaddrinfo`](#uv_freeaddrinfo)
+- [process](#process)
+	- [`uv_spawn`](#uv_spawn)
+	- [`uv_process_kill`](#uv_process_kill)
+	- [`uv_kill`](#uv_kill)
 - [files](#files)
 	- [`uv_guess_handle`](#uv_guess_handle)
 - [errors](#errors)
@@ -1163,6 +1167,44 @@ int uv_getaddrinfo(uv_loop_t* loop,
  * Free the struct addrinfo. Passing NULL is allowed and is a no-op.
  */
 void uv_freeaddrinfo(struct addrinfo* ai);
+```
+
+# process
+
+## `uv_spawn`
+
+```c
+/*
+ * Initializes the uv_process_t and starts the process. If the process is
+ * successfully spawned, then this function will return 0. Otherwise, the
+ * negative error code corresponding to the reason it couldn't spawn is
+ * returned.
+ *
+ * Possible reasons for failing to spawn would include (but not be limited to)
+ * the file to execute not existing, not having permissions to use the setuid or
+ * setgid specified, or not having enough memory to allocate for the new
+ * process.
+ */
+int uv_spawn(uv_loop_t* loop,
+             uv_process_t* handle,
+             const uv_process_options_t* options);
+```
+
+## `uv_process_kill`
+
+```c
+/*
+ * Kills the process with the specified signal. The user must still
+ * call uv_close on the process.
+ */
+int uv_process_kill(uv_process_t*, int signum);
+```
+
+## `uv_kill`
+
+```c
+/* Kills the process with the specified signal. */
+int uv_kill(int pid, int signum);
 ```
 
 
