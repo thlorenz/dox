@@ -3,25 +3,26 @@
 - [loop](#loop)
 	- [`uv_loop_t`](#uv_loop_t)
 - [requests](#requests)
-	- [`uv_req_t` base for all request types](#uv_req_t-base-for-all-request-types)
-	- [`uv_getaddrinfo_t`](#uv_getaddrinfo_t)
-	- [`uv_shutdown_t`](#uv_shutdown_t)
-	- [`uv_write_t`](#uv_write_t)
-	- [`uv_connect_t`](#uv_connect_t)
-	- [`uv_udp_send_t`](#uv_udp_send_t)
-	- [`uv_fs_t`](#uv_fs_t)
-	- [`uv_work_t`](#uv_work_t)
-	- [`uv_connect_t`](#uv_connect_t-1)
+	- [`uv_req_t`](#uv_req_t)
+	- [`uv_getaddrinfo_t : uv_req_t`](#uv_getaddrinfo_t--uv_req_t)
+	- [`uv_shutdown_t : uv_req_t`](#uv_shutdown_t--uv_req_t)
+	- [`uv_write_t : uv_req_t`](#uv_write_t--uv_req_t)
+	- [`uv_connect_t : uv_req_t`](#uv_connect_t--uv_req_t)
+	- [`uv_udp_send_t : uv_req_t`](#uv_udp_send_t--uv_req_t)
+	- [`uv_fs_t : uv_req_t`](#uv_fs_t--uv_req_t)
+	- [`uv_work_t : uv_req_t`](#uv_work_t--uv_req_t)
+	- [`uv_connect_t : uv_req_t`](#uv_connect_t--uv_req_t-1)
 - [handles](#handles)
 	- [`uv_handle_t`](#uv_handle_t)
 	- [streams](#streams)
-		- [`uv_stream_t`](#uv_stream_t)
-		- [`uv_tcp_t`](#uv_tcp_t)
-		- [`uv_tty_t`](#uv_tty_t)
+		- [`uv_stream_t : uv_handle_t`](#uv_stream_t--uv_handle_t)
+		- [`uv_tcp_t : uv_stream_t`](#uv_tcp_t--uv_stream_t)
+		- [`uv_tty_t : uv_stream_t`](#uv_tty_t--uv_stream_t)
+		- [`uv_pipe_t : uv_stream_t`](#uv_pipe_t--uv_stream_t)
 	- [udp](#udp)
-		- [`uv_udp_t](#uv_udp_t)
-	- [pipe](#pipe)
-		- [`uv_pipe_t`](#uv_pipe_t)
+		- [`uv_udp_t : uv_handle_t`](#uv_udp_t--uv_handle_t)
+	- [poll](#poll)
+		- [`uv_poll_t : uv_handle_t`](#uv_poll_t--uv_handle_t)
 - [file info](#file-info)
 	- [`uv_stat_t`](#uv_stat_t)
 		- [`uv_timespec_t`](#uv_timespec_t)
@@ -30,6 +31,7 @@
 	- [`uv_handle_type`](#uv_handle_type)
 	- [`uv_req_type`](#uv_req_type)
 	- [`uv_udp_flags`](#uv_udp_flags)
+	- [`uv_poll_event`](#uv_poll_event)
 
 # loop
 
@@ -84,7 +86,9 @@ struct uv_loop_s {
 ```
 # requests
 
-## `uv_req_t` base for all request types
+## `uv_req_t` 
+
+Base for all request types
 
 ```c
 /* Abstract base class of all requests. */
@@ -107,7 +111,7 @@ struct uv_req_s {
 
 **Note:** all request types below subclass `uv_req_s` via the inclusion of `UV_REQ_FIELDS`.
 
-## `uv_getaddrinfo_t`
+## `uv_getaddrinfo_t : uv_req_t`
 
 ```c
 struct uv_getaddrinfo_s {
@@ -125,7 +129,7 @@ struct uv_getaddrinfo_s {
 };
 ```
 
-## `uv_shutdown_t`
+## `uv_shutdown_t : uv_req_t`
 
 ```c
 struct uv_shutdown_s {
@@ -137,7 +141,7 @@ struct uv_shutdown_s {
 };
 ```
 
-## `uv_write_t`
+## `uv_write_t : uv_req_t`
 
 ```c
 struct uv_write_s {
@@ -155,7 +159,7 @@ struct uv_write_s {
 };
 ```
 
-## `uv_connect_t`
+## `uv_connect_t : uv_req_t`
 
 ```c
 struct uv_connect_s {
@@ -167,7 +171,7 @@ struct uv_connect_s {
 };
 ```
 
-## `uv_udp_send_t`
+## `uv_udp_send_t : uv_req_t`
 
 ```c
 struct uv_udp_send_s {
@@ -185,7 +189,7 @@ struct uv_udp_send_s {
 };
 ```
 
-## `uv_fs_t`
+## `uv_fs_t : uv_req_t`
 
 ```c
 struct uv_fs_s {
@@ -214,7 +218,7 @@ struct uv_fs_s {
 };
 ```
 
-## `uv_work_t`
+## `uv_work_t : uv_req_t`
 
 ```c
 struct uv_work_s {
@@ -227,7 +231,7 @@ struct uv_work_s {
 };
 ```
 
-## `uv_connect_t`
+## `uv_connect_t : uv_req_t`
 
 ```c
 struct uv_connect_s {
@@ -267,7 +271,7 @@ struct uv_handle_s {
 
 ## streams
 
-### `uv_stream_t`
+### `uv_stream_t : uv_handle_t`
 
 ```c
 struct uv_stream_s {
@@ -297,7 +301,7 @@ struct uv_stream_s {
 
 **Note:** all stream types subclass `uv_stream_t` and thus `uv_handle_t`.
 
-### `uv_tcp_t`
+### `uv_tcp_t : uv_stream_t`
 
 Represents a TCP stream or TCP server.
 
@@ -308,7 +312,7 @@ struct uv_tcp_s {
 };
 ```
 
-### `uv_tty_t`
+### `uv_tty_t : uv_stream_t`
 
 Representing a stream for the console.
 
@@ -320,24 +324,7 @@ struct uv_tty_s {
 };
 ```
 
-## udp
-
-### `uv_udp_t
-
-```c
-struct uv_udp_s {
-  // UV_UDP_PRIVATE_FIELDS (include/uv-unix.h)
-  uv_alloc_cb alloc_cb;
-  uv_udp_recv_cb recv_cb;
-  uv__io_t io_watcher;
-  void* write_queue[2];
-  void* write_completed_queue[2];
-};
-```
-
-## pipe
-
-### `uv_pipe_t`
+### `uv_pipe_t : uv_stream_t`
 
 ```c
 /*
@@ -352,6 +339,61 @@ struct uv_pipe_s {
 };
 ```
 
+## udp
+
+### `uv_udp_t : uv_handle_t`
+
+```c
+struct uv_udp_s {
+  // UV_UDP_PRIVATE_FIELDS (include/uv-unix.h)
+  uv_alloc_cb alloc_cb;
+  uv_udp_recv_cb recv_cb;
+  uv__io_t io_watcher;
+  void* write_queue[2];
+  void* write_completed_queue[2];
+};
+```
+
+## poll
+
+### `uv_poll_t : uv_handle_t`
+
+```c
+/*
+ * uv_poll_t is a subclass of uv_handle_t.
+ *
+ * The uv_poll watcher is used to watch file descriptors for readability and
+ * writability, similar to the purpose of poll(2).
+ *
+ * The purpose of uv_poll is to enable integrating external libraries that
+ * rely on the event loop to signal it about the socket status changes, like
+ * c-ares or libssh2. Using uv_poll_t for any other other purpose is not
+ * recommended; uv_tcp_t, uv_udp_t, etc. provide an implementation that is
+ * much faster and more scalable than what can be achieved with uv_poll_t,
+ * especially on Windows.
+ *
+ * It is possible that uv_poll occasionally signals that a file descriptor is
+ * readable or writable even when it isn't. The user should therefore always
+ * be prepared to handle EAGAIN or equivalent when it attempts to read from or
+ * write to the fd.
+ *
+ * It is not okay to have multiple active uv_poll watchers for the same socket.
+ * This can cause libuv to busyloop or otherwise malfunction.
+ *
+ * The user should not close a file descriptor while it is being polled by an
+ * active uv_poll watcher. This can cause the poll watcher to report an error,
+ * but it might also start polling another socket. However the fd can be safely
+ * closed immediately after a call to uv_poll_stop() or uv_close().
+ *
+ * On windows only sockets can be polled with uv_poll. On unix any file
+ * descriptor that would be accepted by poll(2) can be used with uv_poll.
+ */
+struct uv_poll_s {
+  uv_poll_cb poll_cb;
+  // UV_POLL_PRIVATE_FIELDS (include/uv-unix.h)
+  uv__io_t io_watcher;
+};
+```
 
 
 # file info
@@ -535,3 +577,11 @@ enum uv_udp_flags {
 };
 ```
 
+## `uv_poll_event`
+
+```c
+enum uv_poll_event {
+  UV_READABLE = 1,
+  UV_WRITABLE = 2
+};
+```

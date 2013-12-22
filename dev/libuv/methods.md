@@ -72,6 +72,11 @@
 	- [`uv_pipe_bind`](#uv_pipe_bind)
 	- [`uv_pipe_connect`](#uv_pipe_connect)
 	- [`uv_pipe_pending_instances`](#uv_pipe_pending_instances)
+- [poll](#poll)
+	- [`uv_poll_init`](#uv_poll_init)
+	- [`uv_poll_init_socket`](#uv_poll_init_socket)
+	- [`uv_poll_start`](#uv_poll_start)
+	- [`uv_poll_stop`](#uv_poll_stop)
 - [files](#files)
 	- [`uv_guess_handle`](#uv_guess_handle)
 - [errors](#errors)
@@ -930,6 +935,49 @@ void uv_pipe_connect(uv_connect_t* req, uv_pipe_t* handle, const char* name, uv_
 void uv_pipe_pending_instances(uv_pipe_t* handle, int count);
 ```
 
+# poll
+
+## `uv_poll_init`
+
+```c
+/* Initialize the poll watcher using a file descriptor. */
+int uv_poll_init(uv_loop_t* loop, uv_poll_t* handle, int fd);
+```
+
+## `uv_poll_init_socket`
+
+```c
+/* Initialize the poll watcher using a socket descriptor. On unix this is */
+/* identical to uv_poll_init. On windows it takes a SOCKET handle. */
+int uv_poll_init_socket(uv_loop_t* loop, uv_poll_t* handle, uv_os_sock_t socket);
+```
+
+## `uv_poll_start`
+
+```c
+/*
+ * Starts polling the file descriptor. `events` is a bitmask consisting made up
+ * of UV_READABLE and UV_WRITABLE. As soon as an event is detected the callback
+ * will be called with `status` set to 0, and the detected events set en the
+ * `events` field.
+ *
+ * If an error happens while polling status, `status` < 0 and corresponds
+ * with one of the UV_E* error codes. The user should not close the socket
+ * while uv_poll is active. If the user does that anyway, the callback *may*
+ * be called reporting an error status, but this is not guaranteed.
+ *
+ * Calling uv_poll_start on an uv_poll watcher that is already active is fine.
+ * Doing so will update the events mask that is being watched for.
+ */
+int uv_poll_start(uv_poll_t* handle, int events, uv_poll_cb cb);
+```
+
+## `uv_poll_stop`
+
+```c
+/* Stops polling the file descriptor. */
+int uv_poll_stop(uv_poll_t* handle);
+```
 
 # files
 
