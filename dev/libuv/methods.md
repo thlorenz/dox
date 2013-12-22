@@ -48,6 +48,24 @@
 	- [`uv_tcp_getsockname`](#uv_tcp_getsockname)
 	- [`uv_tcp_getpeername`](#uv_tcp_getpeername)
 	- [`uv_tcp_connect`](#uv_tcp_connect)
+- [udp](#udp)
+	- [`uv_udp_init`](#uv_udp_init)
+	- [`uv_udp_open`](#uv_udp_open)
+	- [`uv_udp_bind`](#uv_udp_bind)
+	- [`uv_udp_getsockname`](#uv_udp_getsockname)
+	- [`uv_udp_set_membership`](#uv_udp_set_membership)
+	- [`uv_udp_set_multicast_loop`](#uv_udp_set_multicast_loop)
+	- [`uv_udp_set_multicast_ttl`](#uv_udp_set_multicast_ttl)
+	- [`uv_udp_set_broadcast`](#uv_udp_set_broadcast)
+	- [`uv_udp_set_ttl`](#uv_udp_set_ttl)
+	- [`uv_udp_send`](#uv_udp_send)
+	- [`uv_udp_recv_start`](#uv_udp_recv_start)
+	- [`uv_udp_recv_stop`](#uv_udp_recv_stop)
+- [tty](#tty)
+	- [`uv_tty_init`](#uv_tty_init)
+	- [`uv_tty_set_mode`](#uv_tty_set_mode)
+	- [`uv_tty_reset_mode`](#uv_tty_reset_mode)
+	- [`uv_tty_get_winsize`](#uv_tty_get_winsize)
 - [file system](#file-system)
 - [errors](#errors)
 	- [`uv_strerror`](#uv_strerror)
@@ -580,6 +598,276 @@ int uv_tcp_getpeername(uv_tcp_t* handle, struct sockaddr* name, int* namelen);
 int uv_tcp_connect(uv_connect_t* req, uv_tcp_t* handle, const struct sockaddr* addr, uv_connect_cb cb);
 ```
 
+# udp
+
+## `uv_udp_init`
+
+```c
+/*
+ * Initialize a new UDP handle. The actual socket is created lazily.
+ * Returns 0 on success.
+ */
+int uv_udp_init(uv_loop_t*, uv_udp_t* handle);
+```
+
+## `uv_udp_open`
+
+```c
+/*
+ * Opens an existing file descriptor or SOCKET as a udp handle.
+ *
+ * Unix only:
+ *  The only requirement of the sock argument is that it follows the
+ *  datagram contract (works in unconnected mode, supports sendmsg()/recvmsg(),
+ *  etc.). In other words, other datagram-type sockets like raw sockets or
+ *  netlink sockets can also be passed to this function.
+ *
+ * This sets the SO_REUSEPORT socket flag on the BSDs and OS X. On other
+ * UNIX platforms, it sets the SO_REUSEADDR flag.  What that means is that
+ * multiple threads or processes can bind to the same address without error
+ * (provided they all set the flag) but only the last one to bind will receive
+ * any traffic, in effect "stealing" the port from the previous listener.
+ * This behavior is something of an anomaly and may be replaced by an explicit
+ * opt-in mechanism in future versions of libuv.
+ */
+int uv_udp_open(uv_udp_t* handle, uv_os_sock_t sock);
+```
+
+## `uv_udp_bind`
+
+```c
+/*
+ * Bind to a IPv4 address and port.
+ *
+ * Arguments:
+ *  handle    UDP handle. Should have been initialized with `uv_udp_init`.
+ *  addr      struct sockaddr_in or struct sockaddr_in6 with the address and
+ *            port to bind to.
+ *  flags     Unused.
+ *
+ * Returns:
+ *  0 on success, or an error code < 0 on failure.
+ *
+ * This sets the SO_REUSEPORT socket flag on the BSDs and OS X. On other
+ * UNIX platforms, it sets the SO_REUSEADDR flag.  What that means is that
+ * multiple threads or processes can bind to the same address without error
+ * (provided they all set the flag) but only the last one to bind will receive
+ * any traffic, in effect "stealing" the port from the previous listener.
+ * This behavior is something of an anomaly and may be replaced by an explicit
+ * opt-in mechanism in future versions of libuv.
+ */
+int uv_udp_bind(uv_udp_t* handle, const struct sockaddr* addr, unsigned int flags);
+```
+
+## `uv_udp_getsockname`
+
+```c
+int uv_udp_getsockname(uv_udp_t* handle, struct sockaddr* name, int* namelen);
+```
+
+## `uv_udp_set_membership`
+
+```c
+/*
+ * Set membership for a multicast address
+ *
+ * Arguments:
+ *  handle              UDP handle. Should have been initialized with
+ *                      `uv_udp_init`.
+ *  multicast_addr      multicast address to set membership for
+ *  interface_addr      interface address
+ *  membership          Should be UV_JOIN_GROUP or UV_LEAVE_GROUP
+ *
+ * Returns:
+ *  0 on success, or an error code < 0 on failure.
+ */
+int uv_udp_set_membership(uv_udp_t* handle,
+                          const char* multicast_addr, 
+                          const char* interface_addr,
+                          uv_membership membership);
+```
+
+## `uv_udp_set_multicast_loop`
+
+```c
+/*
+ * Set IP multicast loop flag. Makes multicast packets loop back to
+ * local sockets.
+ *
+ * Arguments:
+ *  handle              UDP handle. Should have been initialized with
+ *                      `uv_udp_init`.
+ *  on                  1 for on, 0 for off
+ *
+ * Returns:
+ *  0 on success, or an error code < 0 on failure.
+ */
+int uv_udp_set_multicast_loop(uv_udp_t* handle, int on);
+```
+
+## `uv_udp_set_multicast_ttl`
+
+```c
+/*
+ * Set the multicast ttl
+ *
+ * Arguments:
+ *  handle              UDP handle. Should have been initialized with
+ *                      `uv_udp_init`.
+ *  ttl                 1 through 255
+ *
+ * Returns:
+ *  0 on success, or an error code < 0 on failure.
+ */
+int uv_udp_set_multicast_ttl(uv_udp_t* handle, int ttl);
+```
+
+## `uv_udp_set_broadcast`
+
+```c
+/*
+ * Set broadcast on or off
+ *
+ * Arguments:
+ *  handle              UDP handle. Should have been initialized with
+ *                      `uv_udp_init`.
+ *  on                  1 for on, 0 for off
+ *
+ * Returns:
+ *  0 on success, or an error code < 0 on failure.
+ */
+int uv_udp_set_broadcast(uv_udp_t* handle, int on);
+```
+
+## `uv_udp_set_ttl`
+
+```c
+/*
+ * Set the time to live
+ *
+ * Arguments:
+ *  handle              UDP handle. Should have been initialized with
+ *                      `uv_udp_init`.
+ *  ttl                 1 through 255
+ *
+ * Returns:
+ *  0 on success, or an error code < 0 on failure.
+ */
+int uv_udp_set_ttl(uv_udp_t* handle, int ttl);
+```
+
+## `uv_udp_send`
+
+```c
+/*
+ * Send data. If the socket has not previously been bound with `uv_udp_bind`
+ * or `uv_udp_bind6`, it is bound to 0.0.0.0 (the "all interfaces" address)
+ * and a random port number.
+ *
+ * Arguments:
+ *  req       UDP request handle. Need not be initialized.
+ *  handle    UDP handle. Should have been initialized with `uv_udp_init`.
+ *  bufs      List of buffers to send.
+ *  nbufs     Number of buffers in `bufs`.
+ *  addr      Address of the remote peer. See `uv_ip4_addr`.
+ *  send_cb   Callback to invoke when the data has been sent out.
+ *
+ * Returns:
+ *  0 on success, or an error code < 0 on failure.
+ */
+int uv_udp_send(uv_udp_send_t* req,
+                uv_udp_t* handle,
+                const uv_buf_t bufs[],
+                unsigned int nbufs,
+                const struct sockaddr* addr,
+                uv_udp_send_cb send_cb);
+```
+
+## `uv_udp_recv_start`
+
+```c
+/*
+ * Receive data. If the socket has not previously been bound with `uv_udp_bind`
+ * or `uv_udp_bind6`, it is bound to 0.0.0.0 (the "all interfaces" address)
+ * and a random port number.
+ *
+ * Arguments:
+ *  handle    UDP handle. Should have been initialized with `uv_udp_init`.
+ *  alloc_cb  Callback to invoke when temporary storage is needed.
+ *  recv_cb   Callback to invoke with received data.
+ *
+ * Returns:
+ *  0 on success, or an error code < 0 on failure.
+ */
+int uv_udp_recv_start(uv_udp_t* handle, uv_alloc_cb alloc_cb, uv_udp_recv_cb recv_cb);
+```
+
+## `uv_udp_recv_stop`
+
+```c
+/*
+ * Stop listening for incoming datagrams.
+ *
+ * Arguments:
+ *  handle    UDP handle. Should have been initialized with `uv_udp_init`.
+ *
+ * Returns:
+ *  0 on success, or an error code < 0 on failure.
+ */
+int uv_udp_recv_stop(uv_udp_t* handle);
+```
+
+# tty
+
+## `uv_tty_init`
+
+```c
+/*
+ * Initialize a new TTY stream with the given file descriptor. Usually the
+ * file descriptor will be
+ *   0 = stdin
+ *   1 = stdout
+ *   2 = stderr
+ * The last argument, readable, specifies if you plan on calling
+ * uv_read_start with this stream. stdin is readable, stdout is not.
+ *
+ * TTY streams which are not readable have blocking writes.
+ */
+int uv_tty_init(uv_loop_t*, uv_tty_t*, uv_file fd, int readable);
+```
+
+## `uv_tty_set_mode`
+
+```c
+/*
+ * Set mode. 0 for normal, 1 for raw.
+ */
+int uv_tty_set_mode(uv_tty_t*, int mode);
+```
+
+## `uv_tty_reset_mode`
+
+```c
+/*
+ * To be called when the program exits. Resets TTY settings to default
+ * values for the next process to take over.
+ *
+ * This function is async signal-safe on UNIX platforms but can fail with error
+ * code UV_EBUSY if you call it when execution is inside uv_tty_set_mode().
+ */
+int uv_tty_reset_mode(void);
+```
+
+## `uv_tty_get_winsize`
+
+```c
+/*
+ * Gets the current Window size. On success zero is returned.
+ */
+int uv_tty_get_winsize(uv_tty_t*, int* width, int* height);
+```
+
+
 # file system
 
 # errors
@@ -589,8 +877,6 @@ Most functions return 0 on success or an error code < 0 on failure.
 ## `uv_strerror`
 
 ```c
-/*
- */
 const char* uv_strerror(int err);
 ```
 

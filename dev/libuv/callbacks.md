@@ -23,6 +23,8 @@
 - [`uv_fs_event_cb`](#uv_fs_event_cb)
 - [`uv_fs_poll_cb`](#uv_fs_poll_cb)
 - [`uv_signal_cb`](#uv_signal_cb)
+- [`uv_udp_send_cb`](#uv_udp_send_cb)
+- [`uv_udp_recv_cb`](#uv_udp_recv_cb)
 
 ## `uv_alloc_cb`
 
@@ -211,3 +213,36 @@ typedef void (*uv_fs_poll_cb)(uv_fs_poll_t* handle,
 typedef void (*uv_signal_cb)(uv_signal_t* handle, int signum);
 ```
 
+## `uv_udp_send_cb`
+
+```c
+/*
+ * Called after a uv_udp_send() or uv_udp_send6(). status 0 indicates
+ * success otherwise error.
+ */
+typedef void (*uv_udp_send_cb)(uv_udp_send_t* req, int status);
+```
+
+## `uv_udp_recv_cb`
+
+```c
+/*
+ * Callback that is invoked when a new UDP datagram is received.
+ *
+ *  handle  UDP handle.
+ *  nread   Number of bytes that have been received.
+ *          0 if there is no more data to read. You may
+ *          discard or repurpose the read buffer.
+ *          < 0 if a transmission error was detected.
+ *  buf     uv_buf_t with the received data.
+ *  addr    struct sockaddr_in or struct sockaddr_in6.
+ *          Valid for the duration of the callback only.
+ *  flags   One or more OR'ed UV_UDP_* constants.
+ *          Right now only UV_UDP_PARTIAL is used.
+ */
+typedef void (*uv_udp_recv_cb)(uv_udp_t* handle,
+                               ssize_t nread,
+                               const uv_buf_t* buf,
+                               const struct sockaddr* addr,
+                               unsigned flags);
+```

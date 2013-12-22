@@ -1,8 +1,7 @@
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
-- [loop handles](#loop-handles)
+- [loop](#loop)
 	- [`uv_loop_t`](#uv_loop_t)
-	- [`uv_handle_t`](#uv_handle_t)
 - [requests](#requests)
 	- [`uv_req_t` base for all request types](#uv_req_t-base-for-all-request-types)
 	- [`uv_getaddrinfo_t`](#uv_getaddrinfo_t)
@@ -12,9 +11,15 @@
 	- [`uv_udp_send_t`](#uv_udp_send_t)
 	- [`uv_fs_t`](#uv_fs_t)
 	- [`uv_work_t`](#uv_work_t)
-- [streams](#streams)
-	- [`uv_stream_t`](#uv_stream_t)
-	- [`uv_tcp_t`](#uv_tcp_t)
+	- [`uv_connect_t`](#uv_connect_t-1)
+- [handles](#handles)
+	- [`uv_handle_t`](#uv_handle_t)
+	- [streams](#streams)
+		- [`uv_stream_t`](#uv_stream_t)
+		- [`uv_tcp_t`](#uv_tcp_t)
+		- [`uv_tty_t`](#uv_tty_t)
+	- [udp](#udp)
+		- [`uv_udp_t](#uv_udp_t)
 - [file info](#file-info)
 	- [`uv_stat_t`](#uv_stat_t)
 		- [`uv_timespec_t`](#uv_timespec_t)
@@ -22,8 +27,9 @@
 	- [`uv_errno_t`](#uv_errno_t)
 	- [`uv_handle_type`](#uv_handle_type)
 	- [`uv_req_type`](#uv_req_type)
+	- [`uv_udp_flags`](#uv_udp_flags)
 
-# loop handles
+# loop
 
 ## `uv_loop_t`
 
@@ -74,29 +80,6 @@ struct uv_loop_s {
   int wcount;
 };
 ```
-
-## `uv_handle_t`
-
-```c
-/* The abstract base class of all handles.  */
-struct uv_handle_s {
-
-  // UV_HANDLE_FIELDS (include/uv.h)
-  /* public */
-  uv_close_cb close_cb;
-  void* data;
-  /* read-only */
-  uv_loop_t* loop;
-  uv_handle_type type;
-  /* private */
-  void* handle_queue[2];
-
-  // UV_HANDLE_PRIVATE_FIELDS (include/uv-unix.h)
-  int flags;
-  uv_handle_t* next_closing;
-};
-```
-
 # requests
 
 ## `uv_req_t` base for all request types
@@ -242,13 +225,50 @@ struct uv_work_s {
 };
 ```
 
-# streams
+## `uv_connect_t`
 
-## `uv_stream_t`
+```c
+struct uv_connect_s {
+  uv_connect_cb cb;
+  uv_stream_t* handle;
+
+  // UV_CONNECT_PRIVATE_FIELDS (include/uv-unix.h)
+  void* queue[2];
+};
+```
+
+# handles
+
+## `uv_handle_t`
+
+```c
+/* The abstract base class of all handles.  */
+struct uv_handle_s {
+
+  // UV_HANDLE_FIELDS (include/uv.h)
+  /* public */
+  uv_close_cb close_cb;
+  void* data;
+  /* read-only */
+  uv_loop_t* loop;
+  uv_handle_type type;
+  /* private */
+  void* handle_queue[2];
+
+  // UV_HANDLE_PRIVATE_FIELDS (include/uv-unix.h)
+  int flags;
+  uv_handle_t* next_closing;
+};
+```
+
+**Note:** all handle types (including stream types) subclass `uv_handle_t`.
+
+## streams
+
+### `uv_stream_t`
 
 ```c
 struct uv_stream_s {
-  // UV_HANDLE_FIELDS (see uv_handle_t)
 
   // UV_STREAM_FIELDS (include/uv.h)
   /* number of bytes queued for writing */
@@ -273,17 +293,43 @@ struct uv_stream_s {
 };
 ```
 
-## `uv_tcp_t`
+**Note:** all stream types subclass `uv_stream_t` and thus `uv_handle_t`.
+
+### `uv_tcp_t`
 
 Represents a TCP stream or TCP server.
 
 ```c
 struct uv_tcp_s {
-  UV_HANDLE_FIELDS (see uv_handle_t)
-  UV_STREAM_FIELDS (see uv_stream_t)
-
   // UV_TCP_PRIVATE_FIELDS (include/uv-unix.h)
   /* empty */
+};
+```
+
+### `uv_tty_t`
+
+Representing a stream for the console.
+
+```c
+struct uv_tty_s {
+  // UV_TTY_PRIVATE_FIELDS (include/uv-unix.h)
+  struct termios orig_termios;
+  int mode;
+};
+```
+
+## udp
+
+### `uv_udp_t
+
+```c
+struct uv_udp_s {
+  // UV_UDP_PRIVATE_FIELDS (include/uv-unix.h)
+  uv_alloc_cb alloc_cb;
+  uv_udp_recv_cb recv_cb;
+  uv__io_t io_watcher;
+  void* write_queue[2];
+  void* write_completed_queue[2];
 };
 ```
 
@@ -452,5 +498,19 @@ typedef enum {
   UV_REQ_TYPE_PRIVATE
   UV_REQ_TYPE_MAX
 } uv_req_type;
+```
+
+## `uv_udp_flags`
+
+```c
+enum uv_udp_flags {
+  /* Disables dual stack mode. */
+  UV_UDP_IPV6ONLY = 1,
+  /*
+   * Indicates message was truncated because read buffer was too small. The
+   * remainder was discarded by the OS. Used in uv_udp_recv_cb.
+   */
+  UV_UDP_PARTIAL = 2
+};
 ```
 
