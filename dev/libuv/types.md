@@ -27,6 +27,8 @@
 		- [`uv_prepare_t : uv_handle_t`](#uv_prepare_t--uv_handle_t)
 	- [idle](#idle)
 		- [`uv_idle_t : uv_handle_t`](#uv_idle_t--uv_handle_t)
+	- [async](#async)
+		- [`uv_async_t : uv_handle_t`](#uv_async_t--uv_handle_t)
 - [file info](#file-info)
 	- [`uv_stat_t`](#uv_stat_t)
 		- [`uv_timespec_t`](#uv_timespec_t)
@@ -436,6 +438,29 @@ struct uv_idle_s {
   void* queue[2];
 };
 ```
+
+## async
+
+### `uv_async_t : uv_handle_t`
+
+```c
+/*
+ * uv_async_t is a subclass of uv_handle_t.
+ *
+ * uv_async_send wakes up the event loop and calls the async handle's callback.
+ * There is no guarantee that every uv_async_send call leads to exactly one
+ * invocation of the callback; the only guarantee is that the callback function
+ * is called at least once after the call to async_send. Unlike all other
+ * libuv functions, uv_async_send can be called from another thread.
+ */
+struct uv_async_s {
+  // UV_ASYNC_PRIVATE_FIELDS (include/uv-unix.h)
+  uv_async_cb async_cb;
+  void* queue[2];
+  int pending;
+};
+```
+
 
 # file info
 

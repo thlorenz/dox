@@ -85,6 +85,9 @@
 	- [`uv_idle_init`](#uv_idle_init)
 	- [`uv_idle_start`](#uv_idle_start)
 	- [`uv_idle_stop`](#uv_idle_stop)
+- [async](#async)
+	- [`uv_async_init`](#uv_async_init)
+	- [`uv_async_send`](#uv_async_send)
 - [files](#files)
 	- [`uv_guess_handle`](#uv_guess_handle)
 - [errors](#errors)
@@ -1027,6 +1030,30 @@ int uv_idle_start(uv_idle_t* idle, uv_idle_cb cb);
 int uv_idle_stop(uv_idle_t* idle);
 ```
 
+# async
+
+## `uv_async_init`
+
+```c
+/*
+ * Initialize the uv_async_t handle. A NULL callback is allowed.
+ *
+ * Note that uv_async_init(), unlike other libuv functions, immediately
+ * starts the handle. To stop the handle again, close it with uv_close().
+ */
+int uv_async_init(uv_loop_t*, uv_async_t* async, uv_async_cb async_cb);
+```
+
+## `uv_async_send`
+
+```c
+/*
+ * This can be called from other threads to wake up a libuv thread.
+ *
+ * libuv is single threaded at the moment.
+ */
+int uv_async_send(uv_async_t* async);
+```
 
 # files
 
