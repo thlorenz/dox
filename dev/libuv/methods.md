@@ -88,6 +88,13 @@
 - [async](#async)
 	- [`uv_async_init`](#uv_async_init)
 	- [`uv_async_send`](#uv_async_send)
+- [timer](#timer)
+	- [`uv_timer_init`](#uv_timer_init)
+	- [`uv_timer_start`](#uv_timer_start)
+	- [`uv_timer_stop`](#uv_timer_stop)
+	- [`uv_timer_again`](#uv_timer_again)
+	- [`uv_timer_set_repeat`](#uv_timer_set_repeat)
+	- [`uv_timer_get_repeat`](#uv_timer_get_repeat)
 - [files](#files)
 	- [`uv_guess_handle`](#uv_guess_handle)
 - [errors](#errors)
@@ -1054,6 +1061,67 @@ int uv_async_init(uv_loop_t*, uv_async_t* async, uv_async_cb async_cb);
  */
 int uv_async_send(uv_async_t* async);
 ```
+
+# timer
+
+## `uv_timer_init`
+
+```c
+int uv_timer_init(uv_loop_t*, uv_timer_t* handle);
+```
+
+## `uv_timer_start`
+
+```c
+/*
+ * Start the timer. `timeout` and `repeat` are in milliseconds.
+ *
+ * If timeout is zero, the callback fires on the next tick of the event loop.
+ *
+ * If repeat is non-zero, the callback fires first after timeout milliseconds
+ * and then repeatedly after repeat milliseconds.
+ */
+int uv_timer_start(uv_timer_t* handle,
+                   uv_timer_cb cb,
+                   uint64_t timeout,
+                   uint64_t repeat);
+```
+
+## `uv_timer_stop`
+
+```c
+int uv_timer_stop(uv_timer_t* handle);
+```
+
+## `uv_timer_again`
+
+```c
+/*
+ * Stop the timer, and if it is repeating restart it using the repeat value
+ * as the timeout. If the timer has never been started before it returns
+ * UV_EINVAL.
+ */
+int uv_timer_again(uv_timer_t* handle);
+```
+
+## `uv_timer_set_repeat`
+
+```c
+/*
+ * Set the repeat value in milliseconds. Note that if the repeat value is set
+ * from a timer callback it does not immediately take effect. If the timer was
+ * non-repeating before, it will have been stopped. If it was repeating, then
+ * the old repeat value will have been used to schedule the next timeout.
+ */
+void uv_timer_set_repeat(uv_timer_t* handle, uint64_t repeat);
+```
+
+## `uv_timer_get_repeat`
+
+```c
+uint64_t uv_timer_get_repeat(const uv_timer_t* handle);
+```
+
 
 # files
 

@@ -29,6 +29,8 @@
 		- [`uv_idle_t : uv_handle_t`](#uv_idle_t--uv_handle_t)
 	- [async](#async)
 		- [`uv_async_t : uv_handle_t`](#uv_async_t--uv_handle_t)
+	- [timer](#timer)
+		- [`uv_timer_t : uv_handle_t`](#uv_timer_t--uv_handle_t)
 - [file info](#file-info)
 	- [`uv_stat_t`](#uv_stat_t)
 		- [`uv_timespec_t`](#uv_timespec_t)
@@ -366,8 +368,6 @@ struct uv_udp_s {
 
 ```c
 /*
- * uv_poll_t is a subclass of uv_handle_t.
- *
  * The uv_poll watcher is used to watch file descriptors for readability and
  * writability, similar to the purpose of poll(2).
  *
@@ -407,8 +407,6 @@ struct uv_poll_s {
 
 ```c
 /*
- * uv_prepare_t is a subclass of uv_handle_t.
- *
  * Every active prepare handle gets its callback called exactly once per loop
  * iteration, just before the system blocks to wait for completed i/o.
  */
@@ -425,8 +423,6 @@ struct uv_prepare_s {
 
 ```c
 /*
- * uv_idle_t is a subclass of uv_handle_t.
- *
  * Every active idle handle gets its callback called repeatedly until it is
  * stopped. This happens after all other types of callbacks are processed.
  * When there are multiple "idle" handles active, their callbacks are called
@@ -445,8 +441,6 @@ struct uv_idle_s {
 
 ```c
 /*
- * uv_async_t is a subclass of uv_handle_t.
- *
  * uv_async_send wakes up the event loop and calls the async handle's callback.
  * There is no guarantee that every uv_async_send call leads to exactly one
  * invocation of the callback; the only guarantee is that the callback function
@@ -461,6 +455,29 @@ struct uv_async_s {
 };
 ```
 
+## timer
+
+### `uv_timer_t : uv_handle_t`
+
+```c
+/*
+ * Used to get woken up at a specified time in the future.
+ */
+struct uv_timer_s {
+  // UV_TIMER_PRIVATE_FIELDS (include/uv-unix.h)
+  /* RB_ENTRY(uv_timer_s) tree_entry; */
+  struct {
+    struct uv_timer_s* rbe_left;
+    struct uv_timer_s* rbe_right;
+    struct uv_timer_s* rbe_parent;
+    int rbe_color;
+  } tree_entry;
+  uv_timer_cb timer_cb;
+  uint64_t timeout;
+  uint64_t repeat;
+  uint64_t start_id;
+};
+```
 
 # file info
 
