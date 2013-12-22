@@ -13,13 +13,13 @@
 		- [`uv_udp_send_t`](#uv_udp_send_t)
 		- [`uv_fs_t`](#uv_fs_t)
 		- [`uv_work_t`](#uv_work_t)
+	- [file info](#file-info)
+		- [`uv_stat_t`](#uv_stat_t)
+			- [`uv_timespec_t`](#uv_timespec_t)
 	- [enumerations](#enumerations)
 		- [`uv_errno_t`](#uv_errno_t)
 		- [`uv_handle_type`](#uv_handle_type)
 		- [`uv_req_type`](#uv_req_type)
-	- [file info](#file-info)
-		- [`uv_stat_t`](#uv_stat_t)
-			- [`uv_timespec_t`](#uv_timespec_t)
 	- [callbacks](#callbacks)
 		- [`uv_alloc_cb`](#uv_alloc_cb)
 		- [`uv_read_cb`](#uv_read_cb)
@@ -54,11 +54,19 @@
 		- [`uv_stop`](#uv_stop)
 		- [Examples](#examples)
 		- [reference count](#reference-count)
-		- [used less often](#used-less-often)
-			- [time](#time)
-				- [`uv_update_time`](#uv_update_time)
-			- [backend - embedding loop in another loop](#backend---embedding-loop-in-another-loop)
-				- [`uv_backend`](#uv_backend)
+			- [`uv_ref`](#uv_ref)
+			- [`uv_unref`](#uv_unref)
+			- [`uv_has_ref`](#uv_has_ref)
+		- [time](#time)
+			- [`uv_update_time`](#uv_update_time)
+		- [backend - embedding loop in another loop](#backend---embedding-loop-in-another-loop)
+			- [`uv_backend`](#uv_backend)
+	- [handles](#handles)
+		- [`uv_handle_size`](#uv_handle_size)
+		- [`uv_req_size`](#uv_req_size)
+		- [`uv_is_active`](#uv_is_active)
+		- [`uv_walk`](#uv_walk)
+		- [`uv_close`](#uv_close)
 	- [file system](#file-system)
 	- [errors](#errors)
 		- [`uv_strerror`](#uv_strerror)
@@ -285,6 +293,40 @@ struct uv_work_s {
 };
 ```
 
+## file info
+
+### `uv_stat_t`
+
+```c
+typedef struct {
+  uint64_t st_dev;
+  uint64_t st_mode;
+  uint64_t st_nlink;
+  uint64_t st_uid;
+  uint64_t st_gid;
+  uint64_t st_rdev;
+  uint64_t st_ino;
+  uint64_t st_size;
+  uint64_t st_blksize;
+  uint64_t st_blocks;
+  uint64_t st_flags;
+  uint64_t st_gen;
+  uv_timespec_t st_atim;
+  uv_timespec_t st_mtim;
+  uv_timespec_t st_ctim;
+  uv_timespec_t st_birthtim;
+};
+```
+
+#### `uv_timespec_t`
+
+```c
+typedef struct {
+  long tv_sec;
+  long tv_nsec;
+};
+```
+
 ## enumerations
 
 ### `uv_errno_t`
@@ -292,7 +334,7 @@ struct uv_work_s {
 ```c
 typedef enum {
 
-  // UV_ERRNO_MAP(XX)
+  // UV_ERRNO_MAP(XX) (include/uv-unix.h)
   XX(E2BIG, "argument list too long")
   XX(EACCES, "permission denied")
   XX(EADDRINUSE, "address already in use")
@@ -416,40 +458,6 @@ typedef enum {
   UV_REQ_TYPE_PRIVATE
   UV_REQ_TYPE_MAX
 } uv_req_type;
-```
-
-## file info
-
-### `uv_stat_t`
-
-```c
-typedef struct {
-  uint64_t st_dev;
-  uint64_t st_mode;
-  uint64_t st_nlink;
-  uint64_t st_uid;
-  uint64_t st_gid;
-  uint64_t st_rdev;
-  uint64_t st_ino;
-  uint64_t st_size;
-  uint64_t st_blksize;
-  uint64_t st_blocks;
-  uint64_t st_flags;
-  uint64_t st_gen;
-  uv_timespec_t st_atim;
-  uv_timespec_t st_mtim;
-  uv_timespec_t st_ctim;
-  uv_timespec_t st_birthtim;
-};
-```
-
-#### `uv_timespec_t`
-
-```c
-typedef struct {
-  long tv_sec;
-  long tv_nsec;
-};
 ```
 
 ## callbacks
@@ -726,21 +734,31 @@ uv_run(loop, UV_RUN_DEFAULT);
 
 ### reference count
 
+#### `uv_ref`
+
 ```c
 /*
  * Manually modify the event loop's reference count. Useful if the user wants
  * to have a handle or timeout that doesn't keep the loop alive.
  */
 void uv_ref(uv_handle_t*);
+```
+
+#### `uv_unref`
+
+```c
 void uv_unref(uv_handle_t*);
+```
+
+#### `uv_has_ref`
+
+```c
 int uv_has_ref(const uv_handle_t*);
 ```
 
-### used less often
+### time
 
-#### time
-
-##### `uv_update_time`
+#### `uv_update_time`
 
 ```c
 /*
@@ -754,7 +772,7 @@ int uv_has_ref(const uv_handle_t*);
  */
 void uv_update_time(uv_loop_t*);
 
-##### `uv_now`
+#### `uv_now`
 
 /*
  * Return the current timestamp in milliseconds. The timestamp is cached at
@@ -770,9 +788,9 @@ void uv_update_time(uv_loop_t*);
 uint64_t uv_now(uv_loop_t*);
 ```
 
-#### backend - embedding loop in another loop
+### backend - embedding loop in another loop
 
-##### `uv_backend`
+#### `uv_backend`
 
 ```c
 /*
@@ -791,7 +809,7 @@ uint64_t uv_now(uv_loop_t*);
  */
 int uv_backend_fd(const uv_loop_t*);
 
-##### `uv_backend_timeout`
+#### `uv_backend_timeout`
 
 /*
  * Get the poll timeout. The return value is in milliseconds, or -1 for no
@@ -800,7 +818,84 @@ int uv_backend_fd(const uv_loop_t*);
 int uv_backend_timeout(const uv_loop_t*);
 ```
 
+## handles
+
+### `uv_handle_size`
+
+```c
+/*
+ * Returns size of various handle types, useful for FFI
+ * bindings to allocate correct memory without copying struct
+ * definitions
+ */
+size_t uv_handle_size(uv_handle_type type);
+```
+
+### `uv_req_size`
+
+```c
+/*
+ * Returns size of request types, useful for dynamic lookup with FFI
+ */
+size_t uv_req_size(uv_req_type type);
+```
+
+### `uv_is_active`
+
+```c
+/*
+ * Returns non-zero if the handle is active, zero if it's inactive.
+ *
+ * What "active" means depends on the type of handle:
+ *
+ *  - A uv_async_t handle is always active and cannot be deactivated, except
+ *    by closing it with uv_close().
+ *
+ *  - A uv_pipe_t, uv_tcp_t, uv_udp_t, etc. handle - basically any handle that
+ *    deals with I/O - is active when it is doing something that involves I/O,
+ *    like reading, writing, connecting, accepting new connections, etc.
+ *
+ *  - A uv_check_t, uv_idle_t, uv_timer_t, etc. handle is active when it has
+ *    been started with a call to uv_check_start(), uv_idle_start(), etc.
+ *
+ *      Rule of thumb: if a handle of type uv_foo_t has a uv_foo_start()
+ *      function, then it's active from the moment that function is called.
+ *      Likewise, uv_foo_stop() deactivates the handle again.
+ *
+ */
+int uv_is_active(const uv_handle_t* handle);
+```
+
+### `uv_walk`
+
+```c
+/*
+ * Walk the list of open handles.
+ */
+void uv_walk(uv_loop_t* loop, uv_walk_cb walk_cb, void* arg);
+```
+
+
+### `uv_close`
+
+```c
+/*
+ * Request handle to be closed. close_cb will be called asynchronously after
+ * this call. This MUST be called on each handle before memory is released.
+ *
+ * Note that handles that wrap file descriptors are closed immediately but
+ * close_cb will still be deferred to the next iteration of the event loop.
+ * It gives you a chance to free up any resources associated with the handle.
+ *
+ * In-progress requests, like uv_connect_t or uv_write_t, are cancelled and
+ * have their callbacks called asynchronously with status=UV_ECANCELED.
+ */
+void uv_close(uv_handle_t* handle, uv_close_cb close_cb);
+```
+
 ## file system
+
+
 
 
 ## errors
