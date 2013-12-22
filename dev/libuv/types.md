@@ -21,8 +21,8 @@
 		- [`uv_pipe_t : uv_stream_t`](#uv_pipe_t--uv_stream_t)
 	- [udp](#udp)
 		- [`uv_udp_t : uv_handle_t`](#uv_udp_t--uv_handle_t)
-	- [poll](#poll)
-		- [`uv_poll_t : uv_handle_t`](#uv_poll_t--uv_handle_t)
+	- [`uv_poll_t : uv_handle_t`](#uv_poll_t--uv_handle_t)
+	- [`uv_prepare_t : uv_handle_t`](#uv_prepare_t--uv_handle_t)
 - [file info](#file-info)
 	- [`uv_stat_t`](#uv_stat_t)
 		- [`uv_timespec_t`](#uv_timespec_t)
@@ -354,9 +354,7 @@ struct uv_udp_s {
 };
 ```
 
-## poll
-
-### `uv_poll_t : uv_handle_t`
+## `uv_poll_t : uv_handle_t`
 
 ```c
 /*
@@ -392,6 +390,22 @@ struct uv_poll_s {
   uv_poll_cb poll_cb;
   // UV_POLL_PRIVATE_FIELDS (include/uv-unix.h)
   uv__io_t io_watcher;
+};
+```
+
+## `uv_prepare_t : uv_handle_t`
+
+```c
+/*
+ * uv_prepare_t is a subclass of uv_handle_t.
+ *
+ * Every active prepare handle gets its callback called exactly once per loop
+ * iteration, just before the system blocks to wait for completed i/o.
+ */
+struct uv_prepare_s {
+  // UV_PREPARE_PRIVATE_FIELDS (include/uv-unix.h)
+  uv_prepare_cb prepare_cb;
+  void* queue[2];
 };
 ```
 

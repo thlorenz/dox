@@ -77,6 +77,10 @@
 	- [`uv_poll_init_socket`](#uv_poll_init_socket)
 	- [`uv_poll_start`](#uv_poll_start)
 	- [`uv_poll_stop`](#uv_poll_stop)
+- [prepare](#prepare)
+	- [`uv_prepare_init`](#uv_prepare_init)
+	- [`uv_prepare_start`](#uv_prepare_start)
+	- [`uv_prepare_stop`](#uv_prepare_stop)
 - [files](#files)
 	- [`uv_guess_handle`](#uv_guess_handle)
 - [errors](#errors)
@@ -978,6 +982,27 @@ int uv_poll_start(uv_poll_t* handle, int events, uv_poll_cb cb);
 /* Stops polling the file descriptor. */
 int uv_poll_stop(uv_poll_t* handle);
 ```
+
+# prepare
+
+## `uv_prepare_init`
+
+```c
+int uv_prepare_init(uv_loop_t*, uv_prepare_t* prepare);
+```
+
+## `uv_prepare_start`
+
+```c
+int uv_prepare_start(uv_prepare_t* prepare, uv_prepare_cb cb);
+```
+
+## `uv_prepare_stop`
+
+```c
+int uv_prepare_stop(uv_prepare_t* prepare);
+```
+
 
 # files
 
