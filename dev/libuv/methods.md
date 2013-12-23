@@ -159,6 +159,73 @@
 - [errors](#errors)
 	- [`uv_strerror`](#uv_strerror)
 	- [`uv_err_name`](#uv_err_name)
+- [utilities](#utilities)
+	- [ip address conversion](#ip-address-conversion)
+		- [`uv_ip4_addr`](#uv_ip4_addr)
+		- [`uv_ip6_addr`](#uv_ip6_addr)
+		- [`uv_ip4_name`](#uv_ip4_name)
+		- [`uv_ip6_name`](#uv_ip6_name)
+	- [ntop and pton](#ntop-and-pton)
+		- [`uv_inet_ntop`](#uv_inet_ntop)
+		- [`uv_inet_pton`](#uv_inet_pton)
+	- [path](#path)
+		- [`uv_exepath`](#uv_exepath)
+		- [`uv_cwd`](#uv_cwd)
+		- [`uv_chdir`](#uv_chdir)
+	- [memory](#memory)
+		- [`uv_get_free_memory`](#uv_get_free_memory)
+		- [`uv_get_total_memory`](#uv_get_total_memory)
+	- [time](#time-1)
+		- [`uv_hrtime`](#uv_hrtime)
+	- [stdio](#stdio)
+		- [`uv_disable_stdio_inheritance`](#uv_disable_stdio_inheritance)
+	- [dynamic library access](#dynamic-library-access)
+		- [`uv_dlopen`](#uv_dlopen)
+		- [`uv_dlclose`](#uv_dlclose)
+		- [`uv_dlsym`](#uv_dlsym)
+		- [`uv_dlerror`](#uv_dlerror)
+	- [mutex](#mutex)
+		- [`uv_mutex_init`](#uv_mutex_init)
+		- [`uv_mutex_destroy`](#uv_mutex_destroy)
+		- [`uv_mutex_lock`](#uv_mutex_lock)
+		- [`uv_mutex_trylock`](#uv_mutex_trylock)
+		- [`uv_mutex_unlock`](#uv_mutex_unlock)
+	- [rwlock](#rwlock)
+		- [`uv_rwlock_init`](#uv_rwlock_init)
+		- [`uv_rwlock_destroy`](#uv_rwlock_destroy)
+		- [`uv_rwlock_rdlock`](#uv_rwlock_rdlock)
+		- [`uv_rwlock_tryrdlock`](#uv_rwlock_tryrdlock)
+		- [`uv_rwlock_rdunlock`](#uv_rwlock_rdunlock)
+		- [`uv_rwlock_wrlock`](#uv_rwlock_wrlock)
+		- [`uv_rwlock_trywrlock`](#uv_rwlock_trywrlock)
+		- [`uv_rwlock_wrunlock`](#uv_rwlock_wrunlock)
+	- [semaphores](#semaphores)
+		- [`uv_sem_init`](#uv_sem_init)
+		- [`uv_sem_destroy`](#uv_sem_destroy)
+		- [`uv_sem_post`](#uv_sem_post)
+		- [`uv_sem_wait`](#uv_sem_wait)
+		- [`uv_sem_trywait`](#uv_sem_trywait)
+	- [condition variables](#condition-variables)
+		- [`uv_cond_init`](#uv_cond_init)
+		- [`uv_cond_destroy`](#uv_cond_destroy)
+		- [`uv_cond_signal`](#uv_cond_signal)
+		- [`uv_cond_broadcast`](#uv_cond_broadcast)
+		- [`uv_cond_wait`](#uv_cond_wait)
+		- [`uv_cond_timedwait`](#uv_cond_timedwait)
+	- [barrier](#barrier)
+		- [`uv_barrier_init`](#uv_barrier_init)
+		- [`uv_barrier_destroy`](#uv_barrier_destroy)
+		- [`uv_barrier_wait`](#uv_barrier_wait)
+	- [once](#once)
+		- [`uv_once`](#uv_once)
+	- [thread local storage](#thread-local-storage)
+		- [`uv_key_create`](#uv_key_create)
+		- [`uv_key_delete`](#uv_key_delete)
+		- [`uv_key_get`](#uv_key_get)
+		- [`uv_key_set`](#uv_key_set)
+		- [`uv_thread_create`](#uv_thread_create)
+		- [`long `](#long-)
+		- [`uv_thread_join`](#uv_thread_join)
 
 # loop
 
@@ -1743,7 +1810,6 @@ int uv_signal_stop(uv_signal_t* handle);
 void uv_loadavg(double avg[3]);
 ```
 
-
 # errors
 
 Most functions return 0 on success or an error code < 0 on failure.
@@ -1759,3 +1825,429 @@ const char* uv_strerror(int err);
 ```
 const char* uv_err_name(int err);
 ```
+
+# utilities
+
+## ip address conversion
+
+Convert string ip addresses to binary structures
+
+### `uv_ip4_addr`
+
+```c
+int uv_ip4_addr(const char* ip, int port, struct sockaddr_in* addr);
+```
+
+### `uv_ip6_addr`
+
+```c
+int uv_ip6_addr(const char* ip, int port, struct sockaddr_in6* addr);
+```
+
+Convert binary addresses to strings
+
+### `uv_ip4_name`
+
+```c
+int uv_ip4_name(struct sockaddr_in* src, char* dst, size_t size);
+```
+
+### `uv_ip6_name`
+
+```c
+int uv_ip6_name(struct sockaddr_in6* src, char* dst, size_t size);
+```
+
+## ntop and pton
+
+Cross-platform IPv6-capable implementation of the 'standard' `inet_ntop`
+and `inet_pton` functions. On success they return 0. If an error 
+the target of the `dst` pointer is unmodified. 
+
+### `uv_inet_ntop`
+
+```c
+int uv_inet_ntop(int af, const void* src, char* dst, size_t size);
+```
+
+### `uv_inet_pton`
+
+```c
+int uv_inet_pton(int af, const char* src, void* dst);
+```
+
+## path
+
+### `uv_exepath`
+
+Gets the executable path 
+
+```c
+int uv_exepath(char buffer, size_t size);
+```
+
+### `uv_cwd`
+
+Gets the current working directory 
+
+```c
+int uv_cwd(char buffer, size_t size);
+```
+
+### `uv_chdir`
+
+Changes the current working directory 
+
+```c
+int uv_chdir(const char* dir);
+```
+
+## memory
+
+Gets memory info in bytes 
+
+### `uv_get_free_memory`
+
+```c
+uint64_t uv_get_free_memory(void);
+```
+
+### `uv_get_total_memory`
+
+```c
+uint64_t uv_get_total_memory(void);
+```
+
+## time
+
+### `uv_hrtime`
+
+Returns the current high-resolution real time. This is expressed in
+nanoseconds. It is relative to an arbitrary time in the past. It is not
+related to the time of day and therefore not subject to clock drift. The
+primary use is for measuring performance between intervals.
+
+Note not every platform can support nanosecond resolution; however, this
+value will always be in nanoseconds.
+ 
+```c
+extern uint64_t uv_hrtime(void);
+```
+
+## stdio
+
+### `uv_disable_stdio_inheritance`
+
+Disables inheritance for file descriptors  handles that this process
+inherited from its parent. The effect is that child processes spawned by
+this process don't accidentally inherit these handles.
+
+It is recommended to call this function as early in your program as possible,
+before the inherited file descriptors can be closed or duplicated.
+
+Note that this function works on a best-effort basis: there is no guarantee
+that libuv can discover all file descriptors that were inherited. In general
+it does a better job on Windows than it does on unix.
+ 
+```c
+void uv_disable_stdio_inheritance(void);
+```
+
+## dynamic library access
+
+
+### `uv_dlopen`
+
+Opens a shared library. The filename is in utf-8. Returns 0 on success and
+-1 on error. Call `uv_dlerror(uv_lib_t)` to get the error message.
+
+```c 
+int uv_dlopen(const char* filename, uv_lib_t* lib);
+```
+
+### `uv_dlclose`
+
+Close the shared library.
+
+```c
+void uv_dlclose(uv_lib_t* lib);
+```
+
+### `uv_dlsym`
+
+Retrieves a data pointer from a dynamic library. It is legal for a symbol to
+map to NULL. Returns 0 on success and -1 if the symbol was not found.
+
+```c
+int uv_dlsym(uv_lib_t* lib, const char* name, void** ptr);
+```
+
+### `uv_dlerror`
+
+Returns the last uv_dlopen() or uv_dlsym() error message.
+
+```c
+const char* uv_dlerror(uv_lib_t* lib);
+```
+
+## mutex
+
+The mutex functions return 0 on success or an error code < 0
+(unless the return type is void, of course).
+
+### `uv_mutex_init`
+
+```c
+int uv_mutex_init(uv_mutex_t* handle);
+```
+
+### `uv_mutex_destroy`
+
+```c
+void uv_mutex_destroy(uv_mutex_t* handle);
+```
+
+### `uv_mutex_lock`
+
+```c
+void uv_mutex_lock(uv_mutex_t* handle);
+```
+
+### `uv_mutex_trylock`
+
+```c
+int uv_mutex_trylock(uv_mutex_t* handle);
+```
+### `uv_mutex_unlock`
+
+```c
+void uv_mutex_unlock(uv_mutex_t* handle);
+```
+
+## rwlock
+
+The rwlock functions return 0 on success or an error code < 0
+(unless the return type is void, of course).
+
+### `uv_rwlock_init`
+
+```c
+int uv_rwlock_init(uv_rwlock_t* rwlock);
+```
+
+### `uv_rwlock_destroy`
+
+```c
+void uv_rwlock_destroy(uv_rwlock_t* rwlock);
+```
+
+### `uv_rwlock_rdlock`
+
+```c
+void uv_rwlock_rdlock(uv_rwlock_t* rwlock);
+```
+
+### `uv_rwlock_tryrdlock`
+
+```c
+int uv_rwlock_tryrdlock(uv_rwlock_t* rwlock);
+```
+
+### `uv_rwlock_rdunlock`
+
+```c
+void uv_rwlock_rdunlock(uv_rwlock_t* rwlock);
+```
+
+### `uv_rwlock_wrlock`
+
+```c
+void uv_rwlock_wrlock(uv_rwlock_t* rwlock);
+```
+
+### `uv_rwlock_trywrlock`
+
+```c
+int uv_rwlock_trywrlock(uv_rwlock_t* rwlock);
+```
+
+### `uv_rwlock_wrunlock`
+
+```c
+void uv_rwlock_wrunlock(uv_rwlock_t* rwlock);
+```
+
+## semaphores
+
+The sempaphore functions return 0 on success or an error code < 0
+(unless the return type is void, of course).
+
+### `uv_sem_init`
+
+```c
+int uv_sem_init(uv_sem_t* sem, unsigned int value);
+```
+
+### `uv_sem_destroy`
+
+```c
+void uv_sem_destroy(uv_sem_t* sem);
+```
+
+### `uv_sem_post`
+
+```c
+void uv_sem_post(uv_sem_t* sem);
+```
+
+### `uv_sem_wait`
+
+```c
+void uv_sem_wait(uv_sem_t* sem);
+```
+
+### `uv_sem_trywait`
+
+```c
+int uv_sem_trywait(uv_sem_t* sem);
+```
+
+
+## condition variables
+
+The condition variable functions return 0 on success or an error code < 0
+(unless the return type is void, of course).
+
+### `uv_cond_init`
+
+```c
+int uv_cond_init(uv_cond_t* cond);
+```
+
+### `uv_cond_destroy`
+
+```c
+void uv_cond_destroy(uv_cond_t* cond);
+```
+
+### `uv_cond_signal`
+
+```c
+void uv_cond_signal(uv_cond_t* cond);
+```
+
+### `uv_cond_broadcast`
+
+```c
+void uv_cond_broadcast(uv_cond_t* cond);
+```
+
+### `uv_cond_wait`
+
+```c
+/* Waits on a condition variable without a timeout.
+ *
+ * Note:
+ * 1. callers should be prepared to deal with spurious wakeups.
+ */
+void uv_cond_wait(uv_cond_t* cond, uv_mutex_t* mutex);
+```
+
+### `uv_cond_timedwait`
+
+```c
+/* Waits on a condition variable with a timeout in nano seconds.
+ * Returns 0 for success or UV_ETIMEDOUT on timeout, It aborts when other
+ * errors happen.
+ *
+ * Note:
+ * 1. callers should be prepared to deal with spurious wakeups.
+ * 2. the granularity of timeout on Windows is never less than one millisecond.
+ * 3. uv_cond_timedwait takes a relative timeout, not an absolute time.
+ */
+int uv_cond_timedwait(uv_cond_t* cond, uv_mutex_t* mutex, uint64_t timeout);
+```
+
+## barrier
+
+### `uv_barrier_init`
+
+```c
+int uv_barrier_init(uv_barrier_t* barrier, unsigned int count);
+```
+
+### `uv_barrier_destroy`
+
+```c
+void uv_barrier_destroy(uv_barrier_t* barrier);
+```
+
+### `uv_barrier_wait`
+
+```c
+void uv_barrier_wait(uv_barrier_t* barrier);
+```
+
+## once
+
+### `uv_once`
+
+```c
+/* Runs a function once and only once. Concurrent calls to uv_once() with the
+ * same guard will block all callers except one (it's unspecified which one).
+ * The guard should be initialized statically with the UV_ONCE_INIT macro.
+ */
+void uv_once(uv_once_t* guard, void (*callback)(void));
+```
+
+## thread local storage
+
+Thread-local storage.  These functions largely follow the semantics of
+`pthread_key_create()`, `pthread_key_delete()`, `pthread_getspecific()` and
+`pthread_setspecific()`.
+
+Note that the total thread-local storage size may be limited.
+That is, it may not be possible to create many TLS keys.
+ 
+### `uv_key_create`
+
+```c
+int uv_key_create(uv_key_t* key);
+```
+
+### `uv_key_delete`
+
+```c
+void uv_key_delete(uv_key_t* key);
+```
+
+### `uv_key_get`
+
+```c
+void* uv_key_get(uv_key_t* key);
+```
+
+### `uv_key_set`
+
+```c
+void uv_key_set(uv_key_t* key, void* value);
+```
+
+### `uv_thread_create`
+
+```c
+int uv_thread_create(uv_thread_t *tid, void (*entry)(void *arg), void *arg);
+```
+
+### `long `
+
+```c
+unsigned long uv_thread_self(void);
+```
+
+### `uv_thread_join`
+
+```c
+int uv_thread_join(uv_thread_t *tid);
+```
+
