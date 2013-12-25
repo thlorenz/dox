@@ -1,7 +1,7 @@
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
 - [User and Group management](#user-and-group-management)
-	- [Users ](#users)
+	- [Users](#users)
 		- [useradd](#useradd)
 		- [usermod](#usermod)
 		- [userdel](#userdel)
@@ -18,7 +18,7 @@
 	- [Directory structure](#directory-structure)
 	- [Pseudo devices](#pseudo-devices)
 	- [Files and inodes](#files-and-inodes)
-		- [EXT3 filesystem ](#ext3-filesystem)
+		- [EXT3 filesystem](#ext3-filesystem)
 		- [Inodes](#inodes)
 		- [Symbolic and hard links](#symbolic-and-hard-links)
 			- [Symbolic links](#symbolic-links)
@@ -39,11 +39,15 @@
 		- [Changing ownership and group](#changing-ownership-and-group)
 - [System services](#system-services)
 	- [Startup init](#startup-init)
-		- [Further Reading](#further-reading)
-- [Installing Libraries/Binaries](#installing-libraries/binaries)
+		- [Further Reading](#further-reading-1)
+- [Installing Libraries/Binaries](#installing-librariesbinaries)
 	- [List Dependencies of a Binary with ldd](#list-dependencies-of-a-binary-with-ldd)
+- [Transfer files using netcat and tar](#transfer-files-using-netcat-and-tar)
+	- [linux to linux](#linux-to-linux)
+	- [mac to linux](#mac-to-linux)
+	- [Resource](#resource)
 - [General](#general)
-	- [Further Reading](#further-reading)
+	- [Further Reading](#further-reading-2)
 
 # User and Group management
 
@@ -310,7 +314,34 @@ ldd prints shared library dependencies of a binary:
 `ldd /path/to/binary`
 
 
+# Transfer files using netcat and tar
 
+## linux to linux
+
+Source:
+
+    tar -cz . | nc -q 10 -l -p 45454
+
+Target:
+
+    nc -w 10 $SOURCE_HOST 45454 | tar -xz
+    
+## mac to linux
+
+I modified the above steps slightly to make this work when a Mac (BSD Unix) is the source.
+
+Source:
+
+    tar -cz . | nc -l 45454
+    
+Target:
+
+    nc -w 10 $SOURCE_HOST 45454 | tar -xz
+
+
+## Resource
+
+[explanation on how to do this for two linux machines](http://superuser.com/a/326218/35373)
     
 # General
 
