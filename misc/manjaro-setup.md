@@ -10,6 +10,9 @@
     sudo pacman -S base-devel
     sudo pacman -S yaourt
     sudo pacman -S synapse
+    sudo pacman -S the_silver_searcher
+    sudo pacman -S autojump
+    sudo pacman -S hexchat
 
 ## public ssh
 
@@ -85,6 +88,27 @@ EndSection
     > agent on
     > default-agent
     > scan on
+
+#### Pairing **Apple Magic Trackpad** has it's problems (I failed).
+
+More information is [here](https://wiki.ubuntu.com/Multitouch/AppleMagicTrackpad). Tried `hcitool` (*Using the command
+line*) with similar results.
+
+The problem is that the device doesn't get discoverd.
+
+Adding the below to my `X11/xorg.conf` didn't help either:
+
+```
+Section "InputClass"
+  Identifier "Magic Trackpad"
+  MatchUSBID "05ac:030e"
+  Driver "synaptics"
+  Option "SHMConfig" "True"
+EndSection
+
+```
+
+Other bluetooth devices were discovered just fine.
 
 ## nodejs
     
