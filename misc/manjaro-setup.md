@@ -70,8 +70,11 @@ EndSection
 
 ### Install Needed packages
 
-sudo pacman -S bluez bluez-utils
+    sudo pacman -S bluez bluez-utils
 
+## Enable bluetoot and start it
+
+    sudo hciconfig hci0 up # sometimes needed only
     sudo systemctl enable bluetooth
     sudo systemctl start bluetooth
 
@@ -79,6 +82,9 @@ sudo pacman -S bluez bluez-utils
 
 [wiki](https://wiki.archlinux.org/index.php/bluetooth)
 
+    > agent on
+    > default-agent
+    > scan on
 
 ## nodejs
     
