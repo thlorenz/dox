@@ -1,3 +1,5 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
 - [Typical Desktop Setup](#typical-desktop-setup)
@@ -8,6 +10,8 @@
 		- [Open Firewall ports](#open-firewall-ports)
 	- [Grub](#grub)
 	- [Change boot config](#change-boot-config)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # Typical Desktop Setup
 

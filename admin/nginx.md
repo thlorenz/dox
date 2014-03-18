@@ -1,6 +1,8 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
-- [Nginx ](#nginx)
+- [Nginx](#nginx)
 	- [Users and permissions](#users-and-permissions)
 	- [Testing configuration](#testing-configuration)
 	- [Controlling daemon](#controlling-daemon)
@@ -18,10 +20,12 @@
 - [Sample Setup](#sample-setup)
 	- [Install](#install)
 	- [Control](#control)
-	- [Configuration](#configuration)
-		- [General ](#general)
+	- [Configuration](#configuration-1)
+		- [General](#general)
 			- [Edits made (defaults of current nginx version match suggested settings mostly)](#edits-made-defaults-of-current-nginx-version-match-suggested-settings-mostly)
 		- [Yesod specific](#yesod-specific)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # Nginx 
 

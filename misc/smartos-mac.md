@@ -1,29 +1,32 @@
-# Setting up SmartOS on Mac with VMWare 
-
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
-- [Install tools on Mac](#install-tools-on-mac)
-- [Launch VMWare `Version 6.0.2 (1398658)` on Mac](#launch-vmware-version-602-1398658-on-mac)
-  - [Wizard starts](#wizard-starts)
-  - [Machine Restarts and SmartOS launches](#machine-restarts-and-smartos-launches)
-  - [After second Restart and SmartOS launch](#after-second-restart-and-smartos-launch)
-- [Login From Mac](#login-from-mac)
-  - [Or add this to your `~/.ssh/config`](#or-add-this-to-your-~sshconfig)
-- [Logged into SmartOS host](#logged-into-smartos-host)
-  - [Import latest zone](#import-latest-zone)
-  - [Create zone](#create-zone)
-    - [Get gateway](#get-gateway)
-    - [Specify zone definition (`/zones/defs/base.json`)](#specify-zone-definition-zonesdefsbasejson)
-      - [Notes](#notes)
-    - [Create zone from SmartOS host](#create-zone-from-smartos-host)
-  - [List zones from SmartOS host](#list-zones-from-smartos-host)
-  - [Login to zone from SmartOS host](#login-to-zone-from-smartos-host)
-- [Login to zone from Mac](#login-to-zone-from-mac)
-  - [Or add this to your `~/.ssh/config`](#or-add-this-to-your-~sshconfig-1)
-  - [Inside Zone](#inside-zone)
-    - [install git](#install-git)
-- [Use Virtual Box instead of VMWare](#use-virtual-box-instead-of-vmware)
-- [Resources](#resources)
+- [Setting up SmartOS on Mac with VMWare](#setting-up-smartos-on-mac-with-vmware)
+	- [Install tools on Mac](#install-tools-on-mac)
+	- [Launch VMWare `Version 6.0.2 (1398658)` on Mac](#launch-vmware-version-602-1398658-on-mac)
+		- [Wizard starts](#wizard-starts)
+		- [Machine Restarts and SmartOS launches](#machine-restarts-and-smartos-launches)
+		- [After second Restart and SmartOS launch](#after-second-restart-and-smartos-launch)
+	- [Login From Mac](#login-from-mac)
+		- [Or add this to your `~/.ssh/config`](#or-add-this-to-your-~sshconfig)
+	- [Logged into SmartOS host](#logged-into-smartos-host)
+		- [Import latest zone](#import-latest-zone)
+		- [Create zone](#create-zone)
+			- [Get gateway](#get-gateway)
+			- [Specify zone definition (`/zones/defs/base.json`)](#specify-zone-definition-zonesdefsbasejson)
+				- [Notes](#notes)
+			- [Create zone from SmartOS host](#create-zone-from-smartos-host)
+		- [List zones from SmartOS host](#list-zones-from-smartos-host)
+		- [Login to zone from SmartOS host](#login-to-zone-from-smartos-host)
+	- [Login to zone from Mac](#login-to-zone-from-mac)
+		- [Or add this to your `~/.ssh/config`](#or-add-this-to-your-~sshconfig-1)
+		- [Inside Zone](#inside-zone)
+			- [install git](#install-git)
+	- [Use Virtual Box instead of VMWare](#use-virtual-box-instead-of-vmware)
+	- [Resources](#resources)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Install tools on Mac
 

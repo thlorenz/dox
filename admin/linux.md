@@ -1,3 +1,5 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
 - [User and Group management](#user-and-group-management)
@@ -48,6 +50,8 @@
 	- [Resource](#resource)
 - [General](#general)
 	- [Further Reading](#further-reading-2)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # User and Group management
 

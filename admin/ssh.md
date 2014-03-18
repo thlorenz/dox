@@ -1,3 +1,5 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
 - [Config SSH](#config-ssh)
@@ -5,7 +7,10 @@
 	- [Remote Machine](#remote-machine)
 		- [SSH config](#ssh-config)
 		- [Reload ssh](#reload-ssh)
-		- [Local Station](#local-station)
+		- [Local Station](#local-station-1)
+		- [Making ssh safer](#making-ssh-safer)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # Config SSH
 
@@ -39,3 +44,9 @@ Change port in config:
 ### Local Station
 
     ssh -p port user@url
+
+### Making ssh safer
+
+Mainly by tweaking `/etc/ssh/sshd_config`.
+
+[resource](http://www.nixtutor.com/linux/installing-and-configuring-an-ssh-server/)
