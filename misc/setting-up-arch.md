@@ -12,6 +12,7 @@
 			- [`/etc/conf.d/network@interface`](#etcconfdnetwork@interface)
 			- [`/etc/systemd/system/network@.service`](#etcsystemdsystemnetwork@service)
 			- [Enable the unit and start it, passing the name of the interface](#enable-the-unit-and-start-it-passing-the-name-of-the-interface)
+		- [mounting raid volumes](#mounting-raid-volumes)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -134,5 +135,27 @@ systemctl start network@<interface>.service
 [guide](https://wiki.archlinux.org/index.php/Network_configuration#Static_IP_address)
 
 
+#### mounting raid volumes
 
+    pacman -S dmraid
+
+    # activate raids and make them appear inside /dev/mapper
+    systemctl enable dmraid.service  
+
+    # manually activate raid to prep for next two steps
+    dmraid -ay
+
+    # mount raid volumes
+    mount /dev/mapper/xxxx_RAIDVOL2
+    mount /dev/mapper/xxxx_RAIDVOL3
+
+    # get UUIDs
+    blkid
+
+
+For each `UUID` add a line to fstab, i.e.
+
+    UUID=1CEC84C2ECD42822   /media/data    ntfs         defaults  0 0
+
+[stackoverflow answer](http://askubuntu.com/a/387127/53802)
 
