@@ -10,15 +10,37 @@
 	- [Groups](#groups)
 		- [addgroup](#addgroup)
 		- [delgroup](#delgroup)
+			- [Resources](#resources)
 - [Programs and processes](#programs-and-processes)
 	- [System Services](#system-services)
+		- [Killing running services](#killing-running-services)
 	- [Process management](#process-management)
 		- [Listing processes](#listing-processes)
 		- [Killing Processes](#killing-processes)
 		- [Further Reading](#further-reading)
+	- [Memory Management](#memory-management)
+		- [System Memory Usage](#system-memory-usage)
+	- [Managing System Logs](#managing-system-logs)
 - [Linux File System](#linux-file-system)
+	- [Partitions](#partitions)
+		- [Partition Types](#partition-types)
+		- [Swap Partition](#swap-partition)
+	- [Filesystems](#filesystems)
+		- [Creating Filesystems](#creating-filesystems)
+		- [Checking Filesystems](#checking-filesystems)
+		- [Mounting Filesystems](#mounting-filesystems)
+			- [`mount` options](#mount-options)
+		- [What devices are mounted?](#what-devices-are-mounted)
+		- [Unmounting Filesystems](#unmounting-filesystems)
+		- [Remounting Filesystems](#remounting-filesystems)
+	- [`/etc/fstab`](#etcfstab)
 	- [Directory structure](#directory-structure)
 	- [Pseudo devices](#pseudo-devices)
+		- [Devices Files](#devices-files)
+	- [`/proc` Filesystem](#proc-filesystem)
+		- [Show process information](#show-process-information)
+		- [Show meminfo](#show-meminfo)
+		- [Show ioports](#show-ioports)
 	- [Files and inodes](#files-and-inodes)
 		- [EXT3 filesystem](#ext3-filesystem)
 		- [Inodes](#inodes)
@@ -38,7 +60,11 @@
 		- [Directories](#directories)
 		- [Octal representation](#octal-representation)
 		- [Changing permissions](#changing-permissions)
+		- [Default mode and `umask`](#default-mode-and-umask)
 		- [Changing ownership and group](#changing-ownership-and-group)
+		- [Find files associated with particular user](#find-files-associated-with-particular-user)
+		- [setuid and setgid bit](#setuid-and-setgid-bit)
+			- [Find files with `setuid` or `setgid` set](#find-files-with-setuid-or-setgid-set)
 - [System services](#system-services)
 	- [Startup init](#startup-init)
 		- [Further Reading](#further-reading-1)
@@ -47,7 +73,14 @@
 - [Transfer files using netcat and tar](#transfer-files-using-netcat-and-tar)
 	- [linux to linux](#linux-to-linux)
 	- [mac to linux](#mac-to-linux)
+- [Scheduling Recurring Jobs using cron](#scheduling-recurring-jobs-using-cron)
+	- [Resources](#resources-1)
 	- [Resource](#resource)
+- [Managing installed libraries](#managing-installed-libraries)
+	- [Managing dependencies](#managing-dependencies)
+	- [Shared libraries](#shared-libraries)
+		- [Shared static libraries](#shared-static-libraries)
+		- [Shared dynamic libraries](#shared-dynamic-libraries)
 - [General](#general)
 	- [Further Reading](#further-reading-2)
 
@@ -58,6 +91,7 @@
 ## Users 
 
 - stored inside `/etc/passwd`
+- may edit that file to manage users or do it via one of the below commands
 
 ### useradd
 
@@ -94,6 +128,10 @@ Creates new user account with default settings
 
 - removes group (remove all users from group first)
 
+#### Resources
+
+- [how to setuid and gid](http://linuxg.net/how-to-set-the-setuid-and-setgid-bit-for-files-in-linux-and-unix/)
+
 # Programs and processes
 
 ## System Services
@@ -104,12 +142,19 @@ Creates new user account with default settings
 - `service --status-all` lists all system services and their status
 - `service <name> <command>` allows controlling (e.g., starting, stopping) services
 
+### Killing running services
+
+Most daemons add a `.pid` entry to `/var/run`, so to kill xyz do:
+
+    kill -HUP `cat /var/run/xyz.pid`
+
 ## Process management
 
 ### Listing processes
 
 - `ps aux` lists all currently running processes
-- `top` shows all currently running processes sorted by CPU usage and refreshes every second
+- `ps -C pname` lists all processes whose names contain `pname`
+- `top` or `htop` show all currently running processes sorted by CPU usage and refreshes every second
 
 ### Killing Processes
 
@@ -122,7 +167,128 @@ Creates new user account with default settings
 - [Different ways of showing Unix processes](http://www.cyberciti.biz/faq/show-all-running-processes-in-linux/)
 - [htop examples](http://www.thegeekstuff.com/2011/09/linux-htop-examples/)
 - [Linux System Monitoring Tools](http://www.cyberciti.biz/tips/top-linux-monitoring-tools.html)
+
+## Memory Management
+
+### System Memory Usage
+
+    free
+
+Reports used memory and swap space.
+
+## Managing System Logs
+
+Daemon `syslogd` logs various kinds of system activity to locations controlled by `/etc/syslog.conf`.
+
+On some distros like arch linux this was replaced by [Journal](https://wiki.archlinux.org/index.php/systemd#Journal)
+which is configured via `/etc/systemd/journald.conf`.
+
 # Linux File System
+
+## Partitions
+
+First sector of disk is master boot record with a partition table (info about locations/sizes of partitions).
+
+### Partition Types
+
+- primary, used most often, but partion table size is limited -> only 4 partitions supported
+- extended, holds no data, but acts as container for **logical** partitions
+
+### Swap Partition
+
+Needed to support Memory swapping and hybernation.
+
+Create and turn on via (`-c` says swap for bad blocks)
+
+    mkswap -c /dev/hda3 
+    swapon /dev/hda3 
+
+Linux also supports swap files (usually not as performant).
+    
+    dd if=/dev/zero of=/swap bs=1024 count=32768
+
+## Filesystems
+
+Detect what file systems a kernel supports:
+
+    cat /proc/filesystems
+
+### Creating Filesystems
+
+To support different file systems specify this when building kernel.
+
+    mkfs -t type device
+    mkfs -t ext2 /dev/fd0
+
+Or create via one of the `mk*` commands, so to create an `ext3fs` filesystem do
+
+    mke2fs -j -c /dev/hda2
+    
+- `-j` stands for journaled (keeps track of changes made to file system to make it easier/faster to restore corrupted
+  filesystem)
+
+### Checking Filesystems
+
+    fsck -t type device
+    fsck -t ext3 /dev/hda2
+
+### Mounting Filesystems
+
+    mount -t type device    mount-point
+    mount -t ext3 /dev/hda2 /mnt
+
+Non sudo users can only mount devices listed in `/etc/fstab` with user option. In that case only device **or**
+mountpoint needs to be given, i.e.:
+
+    mount /cdrom
+
+Mount all devices listed in `/etc/fstab` that have `noauto` option
+
+    mount -a
+
+Kernel mounts filesystem directly at boot time, therefore the device containing the root filesystem is coded into the
+kernel image which can be altered via `rdev`.
+
+#### `mount` options
+
+`mount` has many more options turned on via `-o`
+
+Auto convert text files from MSDOS `cr-lf` to UNIX `\n`:
+
+    mount -o conv=auto -t msdos /dev/fd0 /mnt
+
+Mount a device as readonly (CD-ROM):
+
+    mount -o ro -t iso9660 /dev/cdrom /mnt
+
+### What devices are mounted?
+
+    mount
+
+### Unmounting Filesystems
+
+Specific device:
+
+    umount /dev/fd0
+
+All devices mounted on a particular directory:
+
+    umount /mnt
+
+### Remounting Filesystems
+
+Remount a filesystem previously mounted as readonly as read/write:
+
+      mount -o remount rw /mnt
+
+## `/etc/fstab`
+
+Contains entry for each filesystem that is to be mounted at boot time:
+  
+    # device     mount-point    type    options
+    /dev/hda2     /             ext3    defaults
+
+Options are comma-separated list to use with `mount -o`, including `defaults` is recommended
 
 ## Directory structure
 
@@ -156,7 +322,42 @@ Creates new user account with default settings
     - **/urandom**       stream of pseudo random numbers (write to it to feed pool)
     - **/full**          returns error when written to and reads infinite stream of null characters
     - **/zero**          always successful when written to and reads infinite stream of null characters
+
+### Devices Files
+
+Allow user programs to access hardware devices thought the kernel, by making them look like files from the program's
+point of view. Fle operations are supported although they really are devices.
+
+- `b` permissions flag indicates block devices (i.e. hard drives where block size is determined and thus allows random access)
+- `c` permissions flag indicates character devices (i.e. serial port)
+
+    ls -l /dev
     
+## `/proc` Filesystem
+
+Contains system information represented as directory/file structure which is dynamically generated.
+
+Most system report tools use the information found here.
+
+### Show process information
+
+    ls /proc
+
+Each number represents a running process into which we can probe:
+
+    ls  /proc/459
+    cat /proc/459/status
+
+### Show meminfo
+
+    cat /proc/meminfo
+
+`free` uses that info and just rearranges it a bit
+
+### Show ioports
+
+    cat /proc/ioports
+
 ## Files and inodes
 
 ### EXT3 filesystem 
@@ -212,6 +413,9 @@ Creates new user account with default settings
 ## Superuser
 
 - `su` logs in as root
+- `su -` logs in as root and execute root's configuration files
+- `su andy` logs in as andy
+- `su - andy` logs in as andy and execute andy's configuration files
 - `sudo command` executes command with superuser account
 - users allowed to gain root privileges are in `/etc/sudoers` (edit it via **visudo**)
 
@@ -274,12 +478,51 @@ Build from source via (consult readme file after download):
 - `chmod a-w file` nobody can edit file
 - `chmod -R g+rx folder` folder can be accessed by all users in the group (applied recursively)
 
+### Default mode and `umask`
+
+Set default mode for each file that is created by executing `umask` command, i.e inside `.bashrc`.
+
+Meaning of bits are inverted from the meanings applied to `chmod` command. Determine the access you want and substract
+`7` from each digit to get the 3 digit mask.
+
+Set default permissions `750`:
+
+    umask 027
+
 ### Changing ownership and group
 
 - `chown user filename` changes file's owner
 - `chgrp group filename` changes file's group
 - `chown user:group filename` alternative syntax to change both owner and group
 - commands accept `-R` switch
+
+### Find files associated with particular user
+
+    find /usr -user username -ls
+
+### setuid and setgid bit
+
+Causes the program to be executed with the permissions of the owner of that file.
+
+Add `setuid` bit (applies to user)
+
+    chmod u+s /path/to/file
+
+Add `setgid` bit (applies to group)
+
+    chmod g+s /path/to/file
+
+#### Find files with `setuid` or `setgid` set
+
+    find /usr -type f -perm /6000 -exec stat -c "%A %a %n" {} \;
+
+Find only the files with setuid
+
+    find /usr -type f -perm /4000
+
+Find only the files with setgid
+
+    find /usr -type f -perm /200-
 
 # System services
 
@@ -342,13 +585,51 @@ Target:
 
     nc -w 10 $SOURCE_HOST 45454 | tar -xz
 
+# Scheduling Recurring Jobs using cron
+
+## Resources
+
+- [Running Linux, 5th Edition](http://www.amazon.com/Running-Linux-Matthias-Kalle-Dalheimer/dp/0596007604) pages 688-698
+- [howto add jobs to cron](http://www.cyberciti.biz/faq/how-do-i-add-jobs-to-cron-under-linux-or-unix-oses/)
+- [cron examples](http://www.thegeekstuff.com/2009/06/15-practical-crontab-examples/)
 
 ## Resource
 
 [explanation on how to do this for two linux machines](http://superuser.com/a/326218/35373)
-    
+
+# Managing installed libraries
+
+## Managing dependencies
+
+List libs an executable depends on:
+
+    ldd /usr/bin/tty
+
+Regenerate library cache:
+
+    ldconfig
+
+which updates `/etc/ld.so.cache`
+
+## Shared libraries
+
+Each shared library is present in two different files on a system.
+
+### Shared static libraries
+
+- statically linked (routines are copied into the executable)
+- inside `/usr/lib` 
+
+### Shared dynamic libraries
+
+- dynamically linked (**stub** routines are copied so `ld.so` can find them later)
+- inside `/lib`
+- on execution `ld.so` copies routines from shared lib into memory
+
 # General
 
 ## Further Reading
 
 - [Set operation in Unix cheatsheet](http://www.catonmat.net/download/setops.pdf) 
+- [Running Linux, 5th Edition](http://www.amazon.com/Running-Linux-Matthias-Kalle-Dalheimer/dp/0596007604)
+
