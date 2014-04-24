@@ -14,6 +14,8 @@
     sudo pacman -S autojump
     sudo pacman -S hexchat
 
+    sudo pacman -S libssh openssh
+
 ## public ssh
 
     mkdir -p .ssh && ssh-keygen -t rsa -C thlorenz.gmx.de
