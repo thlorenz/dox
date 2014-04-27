@@ -1,3 +1,22 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
+
+- [[SmartOS](http://smartos.org/)](#smartoshttpsmartosorg)
+  - [illumos](#illumos)
+  - [Virtualization](#virtualization)
+    - [Two types of virtualization supported](#two-types-of-virtualization-supported)
+    - [Virtualization is built on top of illumos technologies inherited from OpenSolaris](#virtualization-is-built-on-top-of-illumos-technologies-inherited-from-opensolaris)
+  - [Installation](#installation)
+    - [[SmartOS on VirtualBox](http://wiki.smartos.org/display/DOC/SmartOS+on+VirtualBox)](#smartos-on-virtualboxhttpwikismartosorgdisplaydocsmartosonvirtualbox)
+  - [Managing VMs](#managing-vms)
+  - [Resources](#resources)
+  - [Guides](#guides)
+    - [CheatSheets](#cheatsheets)
+    - [Videos](#videos)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
 - [[SmartOS](http://smartos.org/)](#smartoshttp//smartosorg/)

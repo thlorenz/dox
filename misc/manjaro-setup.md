@@ -1,3 +1,26 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
+
+- [setting up arch on top of manjaro](#setting-up-arch-on-top-of-manjaro)
+  - [pacman installs](#pacman-installs)
+  - [public ssh](#public-ssh)
+  - [reverse scrolling](#reverse-scrolling)
+    - [`~/.Xmodemap`:](#~xmodemap)
+    - [`~/.xinitrc`](#~xinitrc)
+  - [map caps to ctrl](#map-caps-to-ctrl)
+    - [`~/.xinitrc](#~xinitrc)
+  - [touchpad](#touchpad)
+    - [configure](#configure)
+  - [bluetooth](#bluetooth)
+    - [Install Needed packages](#install-needed-packages)
+  - [Enable bluetoot and start it](#enable-bluetoot-and-start-it)
+    - [bluetoothctl tool](#bluetoothctl-tool)
+      - [Pairing **Apple Magic Trackpad** has it's problems (I failed).](#pairing-apple-magic-trackpad-has-its-problems-i-failed)
+  - [nodejs](#nodejs)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # setting up arch on top of manjaro
 
 ## pacman installs
