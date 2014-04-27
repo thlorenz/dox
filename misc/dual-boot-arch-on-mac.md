@@ -14,6 +14,9 @@
   - [Xorg](#xorg)
   - [i3](#i3)
   - [Various other tools](#various-other-tools)
+    - [Vim with python and ruby support](#vim-with-python-and-ruby-support)
+  - [Wifi](#wifi)
+  - [Power](#power)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -59,7 +62,7 @@ pacstrap /mnt base base-devel grub-efi-x86_64 dialog wpa_supplicant
 genfstab -p /mnt >> /mnt/etc/fstab
 ```
 
-- `dialog` and `wpa_supplicant` are needed to launch `wifi-menu` from the installed arch
+- `dialog` and `wpa_supplicant` are needed to launch `wifi-menu` from the installed arch in order to get wifi initially
 
 
 Edit fstab to make SSD drive work properly:
@@ -205,10 +208,93 @@ See `.i3/config` in my [dotfiles](https://github.com/thlorenz/dotfiles/blob/mast
 - [`arandr`](http://christian.amsuess.com/tools/arandr/) `xrandr` gui front end
 - [`google-talk-plugin`](https://aur.archlinux.org/packages/google-talkplugin/) needed for google hangouts
 - [`alsa-utils`](http://www.linuxfromscratch.org/blfs/view/svn/multimedia/alsa-utils.html) to get `alsamixer`
+- [`terminator`]() terminal that supports `UTF-8` properly out of the box (we'll set it to not show titles) [see
+  here](https://github.com/thlorenz/dotfiles/blob/master/config/terminator/config)
 
 ```sh
 pacman -S arandr
 yaourt -S google-talkplugin
 pacman -S htop
 pacman -S alsa-utils
+pacman -S terminator
 ```
+
+#### Vim with python and ruby support
+
+```sh
+pacman -S abs
+sudo abs extra/vim
+mkdir ~/abs && cd abs
+cp -r /var/abs/vim . && cd vim
+
+# change --disable-python and ruby options to enable and remove lua dependency
+vim PKGBUILD
+pacman -S ruby
+makepkg
+sudo pacman -U vim-runtime-7.4.214-1-x86_64.pkg.tar.xz
+sudo pacman -U vim-7.4.214-1-x86_64.pkg.tar.xz 
+
+vim --version # will have +python and + ruby
+```
+
+### Wifi
+
+Preinstalled `wifi-menu` allows connecting manually, but in order to automate this, we'll install
+[`netctl`](https://wiki.archlinux.org/index.php/netctl) and configure it.
+
+Assuming we connected before `wifi-menu` already included a config for us inside `/etc/netctl/`.
+If not, we can copy an example: `cp /etc/netctl/examples/wireless-wpa /etc/netctl/my-profile`
+
+```sh
+sudo pacman -S netctl
+
+# list all available proviles
+sudo netctl list
+
+# try it
+sudo netctl start my-profile
+
+# a) just enable a profile and it'll be used when available
+sudo netctl enable my-profile
+
+# b) setup automatic switching of profiles
+
+sudo pacman -S wpa_actiond
+sudo systemctl enable netctl-auto@wifi-interface
+```
+
+### Power
+
+- [`macfanctld-git`](http://adrian15sgd.wordpress.com/tag/macfanctl/) to calm the fans
+- [`laptop-mode-tools`](https://wiki.archlinux.org/index.php/Laptop_Mode_Tools) laptop power savings package
+  - [`cpupower`](https://www.archlinux.org/packages/community/x86_64/cpupower/) examines and tunes processor power
+    savings
+  - [`pm-utils`](https://wiki.archlinux.org/index.php/Pm-utils) suspend and powerstate setting framework
+  - [`powertop`](https://wiki.archlinux.org/index.php/Powertop) enables various powersaving modes in userspace and
+    give info about which processes are using CPU and wake it from idling
+- [`profile-sync-daemon`](https://wiki.archlinux.org/index.php/profile-sync-daemon) manages browserprofile syncing to
+  harddrive to make it more efficient
+- [`anything-sync-daemon`](https://wiki.archlinux.org/index.php/Anything-sync-daemon) same as `profile-sync-daemon` but
+  used for anything but browsers
+- [`granola`](https://aur.archlinux.org/packages/granola/) intelligent power management
+- [`uswsusp`](https://wiki.archlinux.org/index.php/Uswsusp) software suspend (hibernation/standby)
+
+```sh
+yaourt -S macfanctld-git
+systemctl enable macfanctld.service
+```
+
+```sh
+sudo pacman -S cpupower pm-utils
+yaourt -S laptop-mode-tools profile-sync-daemon anything-sync-daemon granola uswsusp-git
+sudo systemctl enable laptop-mode
+sudo systemctl enable cpupower
+sudo systemctl enable psd
+sudo systemctl enable psd-resync
+sudo systemctl enable asd
+sudo systemctl enable asd-resync
+```
+
+- edit `/etc/laptop-mode/laptop-mode.conf` with value `LM_BATT_MAX_LOST_WORK_SECONDS=15`
+- edit `/etc/laptop-mode/conf.d/usb-autosuspend.conf` with value `AUTOSUSPEND_TIMEOUT=1`
+- edit `/etc/laptop-mode/conf.d/intel-hda-powersave.conf` with value `INTEL_HDA_DEVICE_TIMEOUT=1`
