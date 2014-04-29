@@ -11,12 +11,18 @@
 - [Bootloader](#bootloader)
   - [Preparation in Arch](#preparation-in-arch)
   - [Preparation in OSX](#preparation-in-osx)
-  - [Xorg](#xorg)
-  - [i3](#i3)
-  - [Various other tools](#various-other-tools)
+- [Xorg](#xorg)
+- [i3](#i3)
+- [Various other tools](#various-other-tools)
+  - [Audio](#audio)
+  - [Developer Tools](#developer-tools)
     - [Vim with python and ruby support](#vim-with-python-and-ruby-support)
-  - [Wifi](#wifi)
-  - [Power](#power)
+- [Wifi](#wifi)
+  - [SSD](#ssd)
+- [Power](#power)
+  - [Hibernate/Suspend](#hibernatesuspend)
+- [Autologin](#autologin)
+- [Development Tools](#development-tools)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -65,7 +71,7 @@ genfstab -p /mnt >> /mnt/etc/fstab
 - `dialog` and `wpa_supplicant` are needed to launch `wifi-menu` from the installed arch in order to get wifi initially
 
 
-Edit fstab to make SSD drive work properly:
+Edit fstab to make SSD drive work properly and add `tmpfs` entry:
 
 ```
 # <file system>	      <dir>	      <type>	      <options>	                              <dump>	<pass>
@@ -74,6 +80,7 @@ Edit fstab to make SSD drive work properly:
 /dev/sda6           	/         	ext4      		defaults,noatime,discard,data=writeback	0         1
 /dev/sda7           	/home     	ext4      		defaults,noatime,data=ordered		        0         2
 /dev/sda8           	none      	swap      		defaults  				                      0         0
+tmpfs			           /dev/shm 	  tmpfs		      defaults,noatime,nodev,nosuid,noexec,size=2G		0 0
 ```
 
 ## Configure
@@ -175,7 +182,7 @@ sudo bless --device /dev/disk0s4 --setBoot
 
 Boot into Linux (hold `Alt` key when restarting).
 
-### Xorg
+## Xorg
 
 - `xf86-video-intel` because we have a [Intel HD Graphics card](https://wiki.archlinux.org/index.php/Intel_Graphics) 
 - `xf86-input-mtrack-git` because we want better trackpad support
@@ -193,7 +200,7 @@ yaourt -S xf86-input-mtrack-git
 
 Pick default `mesa-libgl` 3D graphics library.
 
-### i3
+## i3
 
 ```
 pacman -Sy i3-wm i3status i3lock
@@ -203,20 +210,63 @@ yaourt -R cmake
 
 See `.i3/config` in my [dotfiles](https://github.com/thlorenz/dotfiles/blob/master/config/i3/config).
 
-### Various other tools
+## Various other tools
 
 - [`arandr`](http://christian.amsuess.com/tools/arandr/) `xrandr` gui front end
 - [`google-talk-plugin`](https://aur.archlinux.org/packages/google-talkplugin/) needed for google hangouts
 - [`alsa-utils`](http://www.linuxfromscratch.org/blfs/view/svn/multimedia/alsa-utils.html) to get `alsamixer`
 - [`terminator`]() terminal that supports `UTF-8` properly out of the box (we'll set it to not show titles) [see
   here](https://github.com/thlorenz/dotfiles/blob/master/config/terminator/config)
+- [`xflux`](https://justgetflux.com/) adapts computer's display to time of day
 
 ```sh
 pacman -S arandr
 yaourt -S google-talkplugin
-pacman -S htop
 pacman -S alsa-utils
 pacman -S terminator
+pacman -S xflux
+pacman -S git
+pacman -S chromium
+yaourt -S chromium-libpdf
+pacman -S flashplugin
+```
+
+### Audio
+
+```sh
+pacman -S pulseaudio pulseaudio-alsa pavucontrol
+```
+
+### Developer Tools
+
+- [iotop](http://www.cyberciti.biz/hardware/linux-iotop-simple-top-like-io-monitor/) watches I/O usage
+- [ncdu](http://mylinuxbook.com/ncdu-ncurses-based-disk-usage-utility/) curses based disk usage util
+- [silver-searcher](https://github.com/ggreer/the_silver_searcher) ag (ack/grep replacement)
+- [clang](https://wiki.archlinux.org/index.php/Clang) includes `clang` and `clang++`
+- clang-analyzer provides `scan-build`
+- [valgrind](http://valgrind.org/) checks for memory leaks
+- [ctags](http://ctags.sourceforge.net/) exuberant ctags -- clang-complete support
+- [libclang-dev]() (not available on arch??) -- clang-complete support
+- jshint to support vim syntastic JavaScript errors
+- [pygments](http://pygments.org/) to make our `c` command work (syntax highlighting `cat`)
+- [ccache](https://wiki.archlinux.org/index.php/ccache) caches compilation results to speed things up
+  - works with `g++`, but also [works with clang](http://petereisentraut.blogspot.com/2011/05/ccache-and-clang.html)
+
+
+```
+pacman -S iotop ncdu gnu-netcat silver-searcher-git
+pacman -S clang clang-analyzer
+pacman -S valgrind
+pacman -S ctags
+
+pacman -S ccache
+
+mkdir -p ~/npm-global
+npm config set prefix '~/npm-global'
+npm install -g jshint
+
+pacman -S python-pip
+sudo pip install Pygments
 ```
 
 #### Vim with python and ruby support
@@ -226,8 +276,19 @@ pacman -S abs
 sudo abs extra/vim
 mkdir ~/abs && cd abs
 cp -r /var/abs/vim . && cd vim
+```
 
-# change --disable-python and ruby options to enable and remove lua dependency
+Change `--disable-python` and ruby options to enable and remove lua dependency among other tweaks.
+Change `--with-x` in order to get clipboard support.
+
+```
+    --with-x=yes \
+    --enable-pythoninterp \
+    --disable-python3interp \
+    --enable-rubyinterp \
+```
+
+```sh
 vim PKGBUILD
 pacman -S ruby
 makepkg
@@ -237,7 +298,7 @@ sudo pacman -U vim-7.4.214-1-x86_64.pkg.tar.xz
 vim --version # will have +python and + ruby
 ```
 
-### Wifi
+## Wifi
 
 Preinstalled `wifi-menu` allows connecting manually, but in order to automate this, we'll install
 [`netctl`](https://wiki.archlinux.org/index.php/netctl) and configure it.
@@ -263,9 +324,20 @@ sudo pacman -S wpa_actiond
 sudo systemctl enable netctl-auto@wifi-interface
 ```
 
-### Power
+### SSD
 
-- [`macfanctld-git`](http://adrian15sgd.wordpress.com/tag/macfanctl/) to calm the fans
+Edit `/etc/udev/rules.d/60-schedulers.rules`:
+
+```
+# Set deadline scheduler for non-rotating disks
+ACTION=="add|change", KERNEL=="sda", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="deadline"
+```
+
+## Power
+
+Most came [from here](https://gist.github.com/denji/6530540)
+
+- [`macfanctld-git`](http://adrian15sgd.wordpress.com/tag/macfanctl/) to enable laptop fans
 - [`laptop-mode-tools`](https://wiki.archlinux.org/index.php/Laptop_Mode_Tools) laptop power savings package
   - [`cpupower`](https://www.archlinux.org/packages/community/x86_64/cpupower/) examines and tunes processor power
     savings
@@ -286,7 +358,7 @@ systemctl enable macfanctld.service
 
 ```sh
 sudo pacman -S cpupower pm-utils
-yaourt -S laptop-mode-tools profile-sync-daemon anything-sync-daemon granola uswsusp-git
+yaourt -S laptop-mode-tools profile-sync-daemon anything-sync-daemon uswsusp-git
 sudo systemctl enable laptop-mode
 sudo systemctl enable cpupower
 sudo systemctl enable psd
@@ -295,6 +367,34 @@ sudo systemctl enable asd
 sudo systemctl enable asd-resync
 ```
 
+- edit `/etc/psd.conf` and add `USERS` and `BROWSERS`
+- edit `/etc/asd.conf` and add at least one location to sync
 - edit `/etc/laptop-mode/laptop-mode.conf` with value `LM_BATT_MAX_LOST_WORK_SECONDS=15`
 - edit `/etc/laptop-mode/conf.d/usb-autosuspend.conf` with value `AUTOSUSPEND_TIMEOUT=1`
 - edit `/etc/laptop-mode/conf.d/intel-hda-powersave.conf` with value `INTEL_HDA_DEVICE_TIMEOUT=1`
+
+### Hibernate/Suspend
+
+In order to hibernate/suspend without passwd add the following to the `/etc/sudoers` file (assuming your user belongs to
+`wheel`):
+
+```
+%wheel ALL=NOPASSWD: /usr/sbin/pm-hibernate
+%wheel ALL=NOPASSWD: /usr/sbin/pm-suspend
+```
+
+Unfortunately external thunderbolt monitors don't survive suspending.
+
+## Autologin
+
+Edit: `/etc/systemd/system/getty@tty1.service.d/autologin.conf`
+
+```
+[Service]
+ExecStart=
+ExecStart=-/usr/bin/agetty --autologin username --noclear %I 38400 linux
+```
+
+## Development Tools
+
+
