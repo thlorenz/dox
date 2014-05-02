@@ -237,6 +237,15 @@ pacman -S flashplugin
 pacman -S pulseaudio pulseaudio-alsa pavucontrol
 ```
 
+Players:
+
+- [sox](http://sox.sourceforge.net/) sound processing and fun things like `play` command
+- [mpg123](http://www.mpg123.org/) plays `mp3`s via `mpg123` command
+
+```sh
+pacman -S sox mpg123
+```
+
 ### Developer Tools
 
 - [iotop](http://www.cyberciti.biz/hardware/linux-iotop-simple-top-like-io-monitor/) watches I/O usage
