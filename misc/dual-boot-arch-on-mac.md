@@ -22,7 +22,6 @@
 - [Power](#power)
   - [Hibernate/Suspend](#hibernatesuspend)
 - [Autologin](#autologin)
-- [Development Tools](#development-tools)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -44,8 +43,14 @@ Part #    Size      Partition type    Partition Code  Partition name
 4     |   128 MiB | Apple HFS+       |  af00        | Linux Boot loader from Apple
 5     |   256 MiB | Linux filesystem |  8300        | boot
 6     |    30 GiB | Linux filesystem |  8300        | root
-7     |   250 GiB | Linux filesystem |  8300        | home
+7     |   150 GiB | Linux filesystem |  8300        | home
 8     |     4 GiB | Linux swap       |  8200        | swap       
+```
+
+Optionally if a shared data partition is desired (read/write to it from OSX and Linux)
+
+```
+9     |   100 GiB | Apple HFS+       |  af00        | media
 ```
 
 ### Format Partitions and install
@@ -62,6 +67,9 @@ mount /dev/sda6 /mnt
 mkdir /mnt/boot && mount /dev/sda5 /mnt/boot
 
 mkdir /mnt/home && mount /dev/sda7 /mnt/home
+
+# optional
+mkdir /mnt/media && mount /dev/sda9 mnt/media
 
 pacstrap /mnt base base-devel grub-efi-x86_64 dialog wpa_supplicant
 
@@ -80,6 +88,10 @@ Edit fstab to make SSD drive work properly and add `tmpfs` entry:
 /dev/sda6           	/         	ext4      		defaults,noatime,discard,data=writeback	0         1
 /dev/sda7           	/home     	ext4      		defaults,noatime,data=ordered		        0         2
 /dev/sda8           	none      	swap      		defaults  				                      0         0
+
+# optional shared media partition (see above)
+/dev/sda9            /media       hfsplus       rw,relatime,umask=000,uid=1000,gid=100,nls=utf8 0 0
+
 tmpfs			           /dev/shm 	  tmpfs		      defaults,noatime,nodev,nosuid,noexec,size=2G		0 0
 ```
 
@@ -260,6 +272,7 @@ pacman -S sox mpg123
 - [pygments](http://pygments.org/) to make our `c` command work (syntax highlighting `cat`)
 - [ccache](https://wiki.archlinux.org/index.php/ccache) caches compilation results to speed things up
   - works with `g++`, but also [works with clang](http://petereisentraut.blogspot.com/2011/05/ccache-and-clang.html)
+= [tmux](https://wiki.archlinux.org/index.php/tmux) terminal multiplexer (ensure to get version 1.8 and up)
 
 
 ```
@@ -267,6 +280,7 @@ pacman -S iotop ncdu gnu-netcat silver-searcher-git
 pacman -S clang clang-analyzer
 pacman -S valgrind
 pacman -S ctags
+pacman -S tmux
 
 pacman -S ccache
 
@@ -403,7 +417,3 @@ Edit: `/etc/systemd/system/getty@tty1.service.d/autologin.conf`
 ExecStart=
 ExecStart=-/usr/bin/agetty --autologin username --noclear %I 38400 linux
 ```
-
-## Development Tools
-
-
