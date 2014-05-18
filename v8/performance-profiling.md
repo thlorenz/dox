@@ -3,6 +3,7 @@
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
 - [v8 Performance Profiling](#v8-performance-profiling)
+  - [Identify and Understand Performance Problem](#identify-and-understand-performance-problem)
   - [Chrome Devtools Profiler](#chrome-devtools-profiler)
   - [Chrome Tracing](#chrome-tracing)
   - [v8 tools](#v8-tools)
@@ -14,13 +15,23 @@
       - [Middle Band](#middle-band)
       - [Bottom Graph](#bottom-graph)
     - [Finding Slow Running Unoptimized Functions](#finding-slow-running-unoptimized-functions)
+      - [d8](#d8)
     - [Determining why a Function was not Optimized](#determining-why-a-function-was-not-optimized)
+      - [d8](#d8-1)
       - [Improvments](#improvments)
   - [Resources](#resources)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 # v8 Performance Profiling
+
+## Identify and Understand Performance Problem
+
+[watch](http://youtu.be/UJPdhx5zTaw?t=40m1s) | [slide](http://v8-io12.appspot.com/index.html#83)
+
+- ensure it's JavaScript and not the DOM
+- reduce testcase to pure JavaScript and run in `v8` shell
+- collect metrics and locate bottlenecks
 
 ## Chrome Devtools Profiler
 
@@ -35,6 +46,7 @@ todo: work through structural profiling talk
 - ship with v8 source code
 - **plot-time-events**: generates `png` showing v8 timeline
 - **(mac|linux|windows)-tick-processor**: generates table of functions sorted by time spent in them
+
 
 ## Using Chrome
 
@@ -87,16 +99,29 @@ Chrome --no-sandbox --js-flags="--prof --noprof-lazy --log-timer-events"
 tools/mac-timer-events /chrome/dir/v8.log
 ```
 
+[watch](http://youtu.be/UJPdhx5zTaw?t=42m33s) | [slide](http://v8-io12.appspot.com/index.html#88)
+
 - generates table of functions sorted by time spent in them
+- includes C++ functions
 - `*` indicates optimized functions
 - functions without `*` could not be optimized
+
+#### d8
+
+[watch](http://youtu.be/UJPdhx5zTaw?t=40m53s) | [slide](http://v8-io12.appspot.com/index.html#84)
+
+```sh
+/v8/out/native/d8 test.js --prof
+```
 
 ### Determining why a Function was not Optimized
 
 [watch](http://youtu.be/VhpdsjBUS3g?t=29m00s)
+[watch](http://youtu.be/UJPdhx5zTaw?t=39m30s) | [slide](http://v8-io12.appspot.com/index.html#81)
 
 ```sh
-Chrome --no-sandbox --js-flags="--trace-deopt --trace-opt-verbose"
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+  --no-sandbox --js-flags="--trace-deopt --trace-opt-verbose --trace-bailout"
 
 [ . lots of other output. ]
 
@@ -105,6 +130,31 @@ Chrome --no-sandbox --js-flags="--trace-deopt --trace-opt-verbose"
 
 - lots of output which is best piped into file and evaluated
 - especially watch out for deoptimized functions with lots of arithmetic operations
+
+#### d8
+
+[watch](http://youtu.be/UJPdhx5zTaw?t=35m12s) | [slide](http://v8-io12.appspot.com/index.html#69)
+
+```sh
+d8 --trace-opt
+```
+
+Log optimizing compiler bailouts:
+
+[watch](http://youtu.be/UJPdhx5zTaw?t=36m24s) | [slide](http://v8-io12.appspot.com/index.html#73)
+
+```sh
+d8 --trace-bailout
+```
+
+Log deoptimizations:
+
+
+[watch](http://youtu.be/UJPdhx5zTaw?t=39m12s) | [slide](http://v8-io12.appspot.com/index.html#80)
+
+```sh
+d8 --trace-deopt
+```
 
 #### Improvments
 
