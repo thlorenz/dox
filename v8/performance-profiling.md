@@ -5,7 +5,9 @@
 - [v8 Performance Profiling](#v8-performance-profiling)
   - [Identify and Understand Performance Problem](#identify-and-understand-performance-problem)
   - [Chrome Devtools Profiler](#chrome-devtools-profiler)
-  - [Chrome Tracing](#chrome-tracing)
+  - [Chrome Tracing  ala [`chrome://tracing`](chrome://tracing/)](#chrome-tracing--ala-chrometracingchrometracing)
+    - [Tools](#tools)
+    - [Resources](#resources)
   - [v8 tools](#v8-tools)
   - [Using Chrome](#using-chrome)
     - [v8 timeline](#v8-timeline)
@@ -19,7 +21,7 @@
     - [Determining why a Function was not Optimized](#determining-why-a-function-was-not-optimized)
       - [d8](#d8-1)
       - [Improvments](#improvments)
-  - [Resources](#resources)
+  - [Resources](#resources-1)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -35,11 +37,20 @@
 
 ## Chrome Devtools Profiler
 
-## Chrome Tracing
+TODO: add info from JS Structure/Sample Profiling talk
 
-- `chrome://tracing`
+## Chrome Tracing  ala [`chrome://tracing`](chrome://tracing/)
 
-todo: work through structural profiling talk
+### Tools
+
+- [trace-viewer](https://code.google.com/p/trace-viewer/)
+- [trace event format](https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/edit)
+
+### Resources
+
+= [about:tracing](http://dev.chromium.org/developers/how-tos/trace-event-profiling-tool)
+
+TODO: add info from JS Structure/Sample Profiling talk
 
 ## v8 tools
 
@@ -166,3 +177,5 @@ d8 --trace-deopt
 - [video: accelerating oz with v8](https://www.youtube.com/watch?v=VhpdsjBUS3g) (unable to find slides)
 - [video: structural and sampling profiling in google chrome](https://www.youtube.com/watch?v=nxXkquTPng8) |
   [slides](https://www.igvita.com/slides/2012/structural-and-sampling-javascript-profiling-in-chrome.pdf)
+- [v8 profiler](https://code.google.com/p/v8/wiki/V8Profiler)
+- [stackoverflow: how to debug nodejs applications](http://stackoverflow.com/a/16512303/97443)
