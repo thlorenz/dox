@@ -36,6 +36,7 @@
     - [Remounting Filesystems](#remounting-filesystems)
   - [`/etc/fstab`](#etcfstab)
   - [Directory structure](#directory-structure)
+    - [Resources](#resources-1)
   - [Pseudo devices](#pseudo-devices)
     - [Devices Files](#devices-files)
   - [`/proc` Filesystem](#proc-filesystem)
@@ -75,7 +76,7 @@
   - [linux to linux](#linux-to-linux)
   - [mac to linux](#mac-to-linux)
 - [Scheduling Recurring Jobs using cron](#scheduling-recurring-jobs-using-cron)
-  - [Resources](#resources-1)
+  - [Resources](#resources-2)
   - [Resource](#resource)
 - [Managing installed libraries](#managing-installed-libraries)
   - [Managing dependencies](#managing-dependencies)
@@ -330,6 +331,10 @@ Options are comma-separated list to use with `mount -o`, including `defaults` is
     - **/run**          runtime data, provides info about state of the system since it started (cleared on reboot)
     - **/spool**        files to be processed (e.g., emails and print jobs)
     - **/tmp**          temporary files deleted on reboot
+
+### Resources
+
+- [Linux Filesystem Hierarchy](http://tldp.org/LDP/Linux-Filesystem-Hierarchy/html/Linux-Filesystem-Hierarchy.html)
 
 ## Pseudo devices
 
