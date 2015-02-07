@@ -253,7 +253,9 @@ END {
 - [Hooked on DTrace, part 4][hooked-4]
 - [DTrace Quickstart][quickstart]
 - [dtrace.org guide][guide]
-- [DTrace One Liners][one-liners]
+- [DTrace One Liners by Brendan Gregg][one-liners]
+- [DTrace One Liners FreeBSD][one-liners-freebsd]
+
 
 [hooked-1]:http://www.bignerdranch.com/blog/hooked-on-dtrace-part-1/
 [hooked-2]:http://www.bignerdranch.com/blog/hooked-on-dtrace-part-2/
@@ -263,3 +265,4 @@ END {
 [quickstart]:http://www.tablespace.net/quicksheet/dtrace-quickstart.html
 [guide]:http://dtrace.org/guide
 [one-liners]:http://www.brendangregg.com/DTrace/dtrace_oneliners.txt
+[one-liners-freebsd](https://wiki.freebsd.org/DTrace/One-Liners)
