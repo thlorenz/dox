@@ -1,0 +1,5 @@
+#+TITLE:Org Mode
+
+* Configuration
+
+- ~(setq org-export-with-broken-links 1)~ to allow exporting without all links working

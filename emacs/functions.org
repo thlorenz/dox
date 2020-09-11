@@ -1,0 +1,24 @@
+#+TITLE: Functions
+
+* Lisp Evaluation
+
+- eval-last-sexp: ~C-x C-e~
+- eval-buffer 
+- eval-defun   
+- eval-expression
+- eval-print-last-sexp
+- load-file
+
+* Documentation/Lookup
+
+- describe-function: ~SPC h f~ 
+- describe-binding: ~SPC h b b~  
+- describe-variable: ~SPC h v~
+- apropos-command  ~SPC h a~
+- apropos-documentation: ~SPC h A~
+- apropos-variable
+- apropos-command
+- elisp-index-search: find a function's documentation in the emacs lisp
+
+
+
