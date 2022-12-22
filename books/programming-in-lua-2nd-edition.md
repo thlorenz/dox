@@ -6,6 +6,35 @@ created with: https://github.com/thlorenz/pdf-annotations-converter
 
 # [Programming in Lua Second Edition 2](https://www.amazon.com/exec/obidos/ASIN/8590379825/lua-pilindex-20)
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Tables](#tables)
+- [Functions](#functions)
+- [Errors](#errors)
+- [Error Messages and Tracebacks](#error-messages-and-tracebacks)
+- [Coroutines](#coroutines)
+- [Serialization](#serialization)
+- [Metatables and Metamethods](#metatables-and-metamethods)
+- [Arithmetic Metamethods](#arithmetic-metamethods)
+- [Relational Metamethods](#relational-metamethods)
+- [Table-Access Metamethods](#table-access-metamethods)
+- [Tables with default values](#tables-with-default-values)
+- [Tracking table accesses](#tracking-table-accesses)
+- [The Environment](#the-environment)
+- [Modules and Packages](#modules-and-packages)
+- [Using Environments](#using-environments)
+- [Object-Oriented Programming](#object-oriented-programming)
+- [Classes](#classes)
+- [Inheritance](#inheritance)
+- [Privacy](#privacy)
+- [Weak Tables](#weak-tables)
+- [Debug Library](#debug-library)
+- [Profiles](#profiles)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 <p align='right' style="float: right;"><i>Page 13 (32)</i></p>
 
 ## Tables

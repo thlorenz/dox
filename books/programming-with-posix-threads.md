@@ -6,6 +6,32 @@ created with: https://github.com/thlorenz/pdf-annotations-converter
 
 # Programming with Posix Threads 2.pdf
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [Parallelism](#parallelism)
+- [Thread-safe](#thread-safe)
+- [reentrant](#reentrant)
+- [Execution context](#execution-context)
+- [Scheduling](#scheduling)
+- [Synchronization](#synchronization)
+- [run until block](#run-until-block)
+- [time-slicing](#time-slicing)
+- [pthread_detach](#pthread_detach)
+- [Nonblocking I/O](#nonblocking-io)
+- [asynchronous I/O](#asynchronous-io)
+- [Checking for errors](#checking-for-errors)
+- [pthread_create](#pthread_create)
+- [pthread_equal](#pthread_equal)
+- [pthread_join](#pthread_join)
+- [lifecycle.c](#lifecyclec)
+- [four basic states](#four-basic-states)
+- [Startup](#startup)
+- [Running and blocking](#running-and-blocking)
+- [Termination](#termination)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Parallelism
 
